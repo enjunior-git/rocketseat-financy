@@ -22,6 +22,9 @@ const config: StorybookConfig = {
     getAbsolutePath('@storybook/addon-a11y'),
     getAbsolutePath('@storybook/addon-docs')
   ],
-  "framework": getAbsolutePath('@storybook/react-vite')
+  "framework": getAbsolutePath('@storybook/react-vite'),
+  "docs": {
+    "autodocs": true
+  }
 };
 export default config;
