@@ -6,7 +6,9 @@ import cors from "cors";
 import express from "express";
 import { buildSchema } from "type-graphql";
 import { ENV } from "./env.js";
+import { CategoryResolver } from "./resolvers/category.resolver.js";
 import { HealthcheckResolver } from "./resolvers/healthcheck.resolver.js";
+import { TransactionResolver } from "./resolvers/transaction.resolver.js";
 
 async function main() {
   const app = express();
@@ -20,7 +22,7 @@ async function main() {
   );
 
   const schema = await buildSchema({
-    resolvers: [HealthcheckResolver],
+    resolvers: [HealthcheckResolver, CategoryResolver, TransactionResolver],
     validate: false,
     emitSchemaFile: "./schema.graphql"
   });
