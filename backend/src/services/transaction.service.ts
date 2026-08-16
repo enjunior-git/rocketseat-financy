@@ -17,6 +17,24 @@ type TransactionWithCategory = Prisma.TransactionGetPayload<{
   };
 }>;
 
+export type CategoryTransactionSummary = {
+  id: string;
+  title: string;
+  colour: string;
+  transactionsAmount: number;
+  totalExpensesAmount: number;
+};
+
+export type TransactionSummary = {
+  totalIncomeMonthly: number;
+  totalExpensesMonthly: number;
+  totalBalance: number;
+  categories: CategoryTransactionSummary[];
+  totalCategoriesAmount: number;
+  totalTransactionsAmount: number;
+  mostUsedCategory: CategoryTransactionSummary | null;
+};
+
 export class TransactionService {
   constructor(private readonly prisma: PrismaClient) {}
 
@@ -48,6 +66,49 @@ export class TransactionService {
         category: true,
       },
     });
+  }
+
+  async summary(referenceDate = new Date()): Promise<TransactionSummary> {
+    const monthStart = new Date(
+      Date.UTC(referenceDate.getUTCFullYear(), referenceDate.getUTCMonth(), 1),
+    );
+    const nextMonthStart = new Date(
+      Date.UTC(referenceDate.getUTCFullYear(), referenceDate.getUTCMonth() + 1, 1),
+    );
+
+    const categories = await this.prisma.category.findMany({
+      include: {
+        transactions: true,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+    const transactions = categories.flatMap((category) => category.transactions);
+    const monthlyTransactions = transactions.filter(
+      (transaction) => transaction.date >= monthStart && transaction.date < nextMonthStart,
+    );
+    const totalIncomeMonthly = this.sumTransactionsByType(monthlyTransactions, "income");
+    const totalExpensesMonthly = this.sumTransactionsByType(monthlyTransactions, "expense");
+    const totalIncome = this.sumTransactionsByType(transactions, "income");
+    const totalExpenses = this.sumTransactionsByType(transactions, "expense");
+    const categorySummaries = categories.map((category) => ({
+      id: category.id,
+      title: category.title,
+      colour: category.colour,
+      transactionsAmount: category.transactions.length,
+      totalExpensesAmount: this.sumTransactionsByType(category.transactions, "expense"),
+    }));
+
+    return {
+      totalIncomeMonthly,
+      totalExpensesMonthly,
+      totalBalance: totalIncome - totalExpenses,
+      categories: categorySummaries,
+      totalCategoriesAmount: categories.length,
+      totalTransactionsAmount: transactions.length,
+      mostUsedCategory: this.findMostUsedCategory(categorySummaries),
+    };
   }
 
   async update(id: string, input: UpdateTransactionInput): Promise<Transaction> {
@@ -99,5 +160,31 @@ export class TransactionService {
     if (!category) {
       throw new Error("Category not found");
     }
+  }
+
+  private sumTransactionsByType(transactions: Transaction[], type: TransactionType): number {
+    return transactions
+      .filter((transaction) => transaction.type === type)
+      .reduce((total, transaction) => total + transaction.amount, 0);
+  }
+
+  private findMostUsedCategory(
+    categories: CategoryTransactionSummary[],
+  ): CategoryTransactionSummary | null {
+    const categoriesWithTransactions = categories.filter(
+      (category) => category.transactionsAmount > 0,
+    );
+
+    if (categoriesWithTransactions.length === 0) {
+      return null;
+    }
+
+    return categoriesWithTransactions.reduce((mostUsedCategory, category) => {
+      if (category.transactionsAmount <= mostUsedCategory.transactionsAmount) {
+        return mostUsedCategory;
+      }
+
+      return category;
+    });
   }
 }

@@ -10,8 +10,18 @@ type CategoryModel {
   icon: String!
   id: ID!
   title: String!
+  totalExpensesAmount: Float!
   transactions: [TransactionModel!]
+  transactionsAmount: Float!
   updatedAt: DateTimeISO!
+}
+
+type CategoryTransactionSummaryModel {
+  colour: String!
+  id: ID!
+  title: String!
+  totalExpensesAmount: Float!
+  transactionsAmount: Float!
 }
 
 input CreateCategoryRequest {
@@ -49,6 +59,7 @@ type Query {
   healthcheck: String!
   listCategories: [CategoryModel!]!
   listTransactions: [TransactionModel!]!
+  transactionSummary(month: DateTimeISO): TransactionSummaryModel!
 }
 
 type TransactionModel {
@@ -61,6 +72,16 @@ type TransactionModel {
   id: ID!
   type: TransactionType!
   updatedAt: DateTimeISO!
+}
+
+type TransactionSummaryModel {
+  categories: [CategoryTransactionSummaryModel!]!
+  mostUsedCategory: CategoryTransactionSummaryModel
+  totalBalance: Float!
+  totalCategoriesAmount: Float!
+  totalExpensesMonthly: Float!
+  totalIncomeMonthly: Float!
+  totalTransactionsAmount: Float!
 }
 
 enum TransactionType {

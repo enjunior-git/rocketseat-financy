@@ -34,6 +34,28 @@ export class CategoryService {
     });
   }
 
+  async countTransactions(categoryId: string): Promise<number> {
+    return this.prisma.transaction.count({
+      where: {
+        categoryId,
+      },
+    });
+  }
+
+  async sumExpenses(categoryId: string): Promise<number> {
+    const aggregate = await this.prisma.transaction.aggregate({
+      _sum: {
+        amount: true,
+      },
+      where: {
+        categoryId,
+        type: "expense",
+      },
+    });
+
+    return aggregate._sum.amount ?? 0;
+  }
+
   async update(id: string, input: UpdateCategoryInput): Promise<Category> {
     const category = await this.find(id);
 

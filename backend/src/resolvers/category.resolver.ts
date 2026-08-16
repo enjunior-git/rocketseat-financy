@@ -50,4 +50,14 @@ export class CategoryResolver {
 
     return transactions.filter((transaction) => transaction.categoryId === category.id);
   }
+
+  @FieldResolver(() => Number)
+  async transactionsAmount(@Root() category: CategoryModel): Promise<number> {
+    return this.categoryService.countTransactions(category.id);
+  }
+
+  @FieldResolver(() => Number)
+  async totalExpensesAmount(@Root() category: CategoryModel): Promise<number> {
+    return this.categoryService.sumExpenses(category.id);
+  }
 }
