@@ -7,6 +7,7 @@ type InputProps = Omit<React.ComponentProps<"input">, "prefix"> & {
   helperText?: string;
   error?: string;
   icon?: React.ReactNode;
+  trailingIcon?: React.ReactNode;
 };
 
 function Input({
@@ -16,6 +17,7 @@ function Input({
   helperText,
   error,
   icon,
+  trailingIcon,
   disabled,
   "aria-describedby": ariaDescribedBy,
   ...props
@@ -68,6 +70,12 @@ function Input({
           )}
           {...props}
         />
+
+        {trailingIcon ? (
+          <span className="flex size-4 shrink-0 items-center justify-center text-current [&_button]:size-6 [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:stroke-[1.75]">
+            {trailingIcon}
+          </span>
+        ) : null}
       </div>
 
       {descriptionId ? (
