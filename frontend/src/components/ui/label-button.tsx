@@ -30,12 +30,7 @@ type LabelButtonProps = ButtonPrimitive.Props & {
   size?: "md" | "sm";
 };
 
-function LabelButton({
-  className,
-  variant = "primary",
-  size = "md",
-  ...props
-}: LabelButtonProps) {
+function LabelButton({ className, variant = "primary", size = "md", ...props }: LabelButtonProps) {
   return (
     <ButtonPrimitive
       data-slot="label-button"
@@ -45,5 +40,5 @@ function LabelButton({
   );
 }
 
-export { LabelButton };
 export type { LabelButtonProps };
+export { LabelButton };

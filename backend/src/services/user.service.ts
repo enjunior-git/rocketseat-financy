@@ -12,7 +12,7 @@ export class UserService {
 
   async create(input: CreateUserInput): Promise<User> {
     return this.prisma.user.create({
-      data: input
+      data: input,
     });
   }
 }

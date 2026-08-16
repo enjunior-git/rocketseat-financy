@@ -22,12 +22,7 @@ type TransactionTypeProps = Omit<React.ComponentProps<"span">, "children"> & {
   children?: string;
 };
 
-function TransactionType({
-  className,
-  type,
-  children,
-  ...props
-}: TransactionTypeProps) {
+function TransactionType({ className, type, children, ...props }: TransactionTypeProps) {
   const config = transactionTypeVariants[type];
   const Icon = config.icon;
 
@@ -46,5 +41,5 @@ function TransactionType({
   );
 }
 
-export { TransactionType };
 export type { TransactionTypeProps, TransactionTypeValue };
+export { TransactionType };

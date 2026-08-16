@@ -4,12 +4,21 @@
   "packageManager": "pnpm@10.33.0",
   "scripts": {
     "dev": "turbo dev",
-    "build": "turbo build"
+    "build": "turbo build",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "lint": "biome lint .",
+    "check": "biome check ."
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["better-sqlite3", "prisma", "@prisma/engines"]
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "prisma",
+      "@prisma/engines"
+    ]
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.8",
     "turbo": "^2.5.6"
   }
 }

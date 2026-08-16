@@ -22,8 +22,7 @@ function Input({
 }: InputProps) {
   const generatedId = useId();
   const inputId = id ?? generatedId;
-  const descriptionId =
-    error || helperText ? `${inputId}-description` : undefined;
+  const descriptionId = error || helperText ? `${inputId}-description` : undefined;
 
   return (
     <div className="group flex w-full flex-col gap-2" data-slot="input-root">
@@ -32,10 +31,8 @@ function Input({
           htmlFor={inputId}
           className={cn(
             "text-sm leading-5 font-medium text-[var(--gray-800)] transition-colors group-focus-within:text-[var(--brand-base)]",
-            error &&
-              "text-[var(--red-base)] group-focus-within:text-[var(--red-base)]",
-            disabled &&
-              "text-[var(--gray-800)] group-focus-within:text-[var(--gray-800)]",
+            error && "text-[var(--red-base)] group-focus-within:text-[var(--red-base)]",
+            disabled && "text-[var(--gray-800)] group-focus-within:text-[var(--gray-800)]",
           )}
         >
           {label}
@@ -45,8 +42,7 @@ function Input({
       <div
         className={cn(
           "flex h-12 items-center gap-3 rounded-[8px] border border-[var(--gray-300)] bg-[var(--white)] px-3 text-[var(--gray-800)] transition-colors group-focus-within:text-[var(--brand-base)]",
-          error &&
-            "text-[var(--red-base)] group-focus-within:text-[var(--red-base)]",
+          error && "text-[var(--red-base)] group-focus-within:text-[var(--red-base)]",
           disabled &&
             "border-[var(--gray-200)] text-[var(--gray-400)] group-focus-within:text-[var(--gray-400)]",
         )}
@@ -75,10 +71,7 @@ function Input({
       </div>
 
       {descriptionId ? (
-        <p
-          id={descriptionId}
-          className="text-xs leading-4 font-normal text-[var(--gray-500)]"
-        >
+        <p id={descriptionId} className="text-xs leading-4 font-normal text-[var(--gray-500)]">
           {error ?? helperText}
         </p>
       ) : null}
@@ -86,5 +79,5 @@ function Input({
   );
 }
 
-export { Input };
 export type { InputProps };
+export { Input };

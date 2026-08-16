@@ -49,5 +49,5 @@ function PaginationButton({
   );
 }
 
-export { PaginationButton };
 export type { PaginationButtonProps };
+export { PaginationButton };

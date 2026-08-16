@@ -1,8 +1,8 @@
-import { randomUUID } from "node:crypto";
 import { execFileSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { mkdtempSync, rmSync } from "node:fs";
-import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { afterAll, afterEach, beforeAll, describe } from "vitest";
 import type { PrismaClient } from "../../generated/prisma/client.js";
 import { createPrismaClient } from "../../src/lib/prisma.js";
@@ -31,21 +31,12 @@ export function integrationRunner(name: string, defineSuite: DefineSuite) {
     beforeAll(async () => {
       execFileSync(
         "pnpm",
-        [
-          "exec",
-          "prisma",
-          "db",
-          "push",
-          "--url",
-          databaseUrl,
-          "--schema",
-          "prisma/schema.prisma"
-        ],
+        ["exec", "prisma", "db", "push", "--url", databaseUrl, "--schema", "prisma/schema.prisma"],
         {
           cwd: process.cwd(),
           env: process.env,
-          stdio: "pipe"
-        }
+          stdio: "pipe",
+        },
       );
 
       prisma = createPrismaClient(databaseUrl);

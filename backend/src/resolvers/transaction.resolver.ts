@@ -1,6 +1,6 @@
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
-import { createPrismaClient } from "../lib/prisma.js";
 import { CreateTransactionRequest, UpdateTransactionRequest } from "../dtos/transaction.dto.js";
+import { createPrismaClient } from "../lib/prisma.js";
 import { TransactionModel } from "../models/transaction.model.js";
 import { TransactionService } from "../services/transaction.service.js";
 
@@ -10,7 +10,7 @@ export class TransactionResolver {
 
   @Mutation(() => TransactionModel)
   async createTransaction(
-    @Arg("data", () => CreateTransactionRequest) data: CreateTransactionRequest
+    @Arg("data", () => CreateTransactionRequest) data: CreateTransactionRequest,
   ): Promise<TransactionModel> {
     return this.transactionService.create(data);
   }
@@ -18,7 +18,7 @@ export class TransactionResolver {
   @Mutation(() => TransactionModel)
   async updateTransaction(
     @Arg("id", () => String) id: string,
-    @Arg("data", () => UpdateTransactionRequest) data: UpdateTransactionRequest
+    @Arg("data", () => UpdateTransactionRequest) data: UpdateTransactionRequest,
   ): Promise<TransactionModel> {
     return this.transactionService.update(id, data);
   }

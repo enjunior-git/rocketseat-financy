@@ -17,18 +17,18 @@ async function main() {
   app.use(
     cors({
       origin: ENV.CORS_ORIGIN,
-      credentials: true
-    })
+      credentials: true,
+    }),
   );
 
   const schema = await buildSchema({
     resolvers: [HealthcheckResolver, CategoryResolver, TransactionResolver],
     validate: false,
-    emitSchemaFile: "./schema.graphql"
+    emitSchemaFile: "./schema.graphql",
   });
 
   const server = new ApolloServer({
-    schema
+    schema,
   });
 
   await server.start();

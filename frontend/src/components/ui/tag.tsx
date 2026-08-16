@@ -29,5 +29,5 @@ function Tag({ className, variant, ...props }: TagProps) {
   return <span className={cn(tagVariants({ variant, className }))} {...props} />;
 }
 
-export { Tag, tagVariants };
 export type { TagProps };
+export { Tag, tagVariants };

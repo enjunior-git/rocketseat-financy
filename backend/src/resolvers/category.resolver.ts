@@ -1,6 +1,6 @@
 import { Arg, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
-import { createPrismaClient } from "../lib/prisma.js";
 import { CreateCategoryRequest, UpdateCategoryRequest } from "../dtos/category.dto.js";
+import { createPrismaClient } from "../lib/prisma.js";
 import { CategoryModel } from "../models/category.model.js";
 import { TransactionModel } from "../models/transaction.model.js";
 import { CategoryService } from "../services/category.service.js";
@@ -14,7 +14,7 @@ export class CategoryResolver {
 
   @Mutation(() => CategoryModel)
   async createCategory(
-    @Arg("data", () => CreateCategoryRequest) data: CreateCategoryRequest
+    @Arg("data", () => CreateCategoryRequest) data: CreateCategoryRequest,
   ): Promise<CategoryModel> {
     return this.categoryService.create(data);
   }
@@ -22,7 +22,7 @@ export class CategoryResolver {
   @Mutation(() => CategoryModel)
   async updateCategory(
     @Arg("id", () => String) id: string,
-    @Arg("data", () => UpdateCategoryRequest) data: UpdateCategoryRequest
+    @Arg("data", () => UpdateCategoryRequest) data: UpdateCategoryRequest,
   ): Promise<CategoryModel> {
     return this.categoryService.update(id, data);
   }

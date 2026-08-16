@@ -25,12 +25,7 @@ type IconButtonProps = Omit<ButtonPrimitive.Props, "children"> & {
   tone?: "neutral" | "danger";
 };
 
-function IconButton({
-  className,
-  icon,
-  tone = "neutral",
-  ...props
-}: IconButtonProps) {
+function IconButton({ className, icon, tone = "neutral", ...props }: IconButtonProps) {
   return (
     <ButtonPrimitive
       data-slot="icon-button"
@@ -42,5 +37,5 @@ function IconButton({
   );
 }
 
-export { IconButton };
 export type { IconButtonProps };
+export { IconButton };

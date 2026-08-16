@@ -53,7 +53,7 @@ export const Filled: Story = {
   },
 };
 
-export const Error: Story = {
+export const ErrorState: Story = {
   args: {
     defaultValue: "Text",
     error: "Helper",

@@ -15,5 +15,5 @@ function Link({ className, ...props }: LinkProps) {
   );
 }
 
-export { Link };
 export type { LinkProps };
+export { Link };

@@ -6,7 +6,7 @@ config();
 const envSchema = z.object({
   JWT_SECRET: z.string().min(1),
   DATABASE_URL: z.string().min(1),
-  CORS_ORIGIN: z.url()
+  CORS_ORIGIN: z.url(),
 });
 
 export const ENV = envSchema.parse(process.env);

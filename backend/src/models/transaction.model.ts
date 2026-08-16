@@ -3,7 +3,7 @@ import { TransactionType } from "../../generated/prisma/enums.js";
 import { CategoryModel } from "./category.model.js";
 
 registerEnumType(TransactionType, {
-  name: "TransactionType"
+  name: "TransactionType",
 });
 
 @ObjectType()

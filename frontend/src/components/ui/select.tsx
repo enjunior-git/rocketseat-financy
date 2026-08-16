@@ -84,9 +84,7 @@ function Select({
                   disabled={option.disabled}
                   className="grid cursor-default grid-cols-[1fr_auto] items-center gap-3 px-3 py-1.5 text-base leading-6 outline-none select-none data-highlighted:bg-[var(--gray-100)] data-disabled:text-[var(--gray-400)]"
                 >
-                  <SelectPrimitive.ItemText>
-                    {option.label}
-                  </SelectPrimitive.ItemText>
+                  <SelectPrimitive.ItemText>{option.label}</SelectPrimitive.ItemText>
                   <SelectPrimitive.ItemIndicator className="text-[var(--success)]">
                     <Check className="size-4 stroke-[2]" />
                   </SelectPrimitive.ItemIndicator>
@@ -100,5 +98,5 @@ function Select({
   );
 }
 
-export { Select };
 export type { SelectOption, SelectProps };
+export { Select };

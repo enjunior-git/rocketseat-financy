@@ -14,23 +14,23 @@ export class CategoryService {
 
   async create(input: CreateCategoryInput): Promise<Category> {
     return this.prisma.category.create({
-      data: input
+      data: input,
     });
   }
 
   async list(): Promise<Category[]> {
     return this.prisma.category.findMany({
       orderBy: {
-        createdAt: "asc"
-      }
+        createdAt: "asc",
+      },
     });
   }
 
   async find(id: string): Promise<Category | null> {
     return this.prisma.category.findUnique({
       where: {
-        id
-      }
+        id,
+      },
     });
   }
 
@@ -43,14 +43,14 @@ export class CategoryService {
 
     return this.prisma.category.update({
       where: {
-        id
+        id,
       },
       data: {
         title: input.title ?? category.title,
         description: input.description ?? category.description,
         icon: input.icon ?? category.icon,
-        colour: input.colour ?? category.colour
-      }
+        colour: input.colour ?? category.colour,
+      },
     });
   }
 
@@ -63,8 +63,8 @@ export class CategoryService {
 
     return this.prisma.category.delete({
       where: {
-        id
-      }
+        id,
+      },
     });
   }
 }
