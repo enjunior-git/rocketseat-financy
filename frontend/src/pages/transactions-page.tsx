@@ -14,6 +14,7 @@ import {
   ShoppingCart,
   Trash2,
   Utensils,
+  WalletCards,
 } from "lucide-react";
 
 import {
@@ -29,11 +30,15 @@ import { Input } from "@/components/ui/input";
 import { PaginationButton } from "@/components/ui/pagination-button";
 import { Select, type SelectOption } from "@/components/ui/select";
 import { Tag, type TagProps } from "@/components/ui/tag";
+import { useCategoriesQuery } from "@/hooks/use-categories-query";
+import { useTransactionsQuery } from "@/hooks/use-transactions-query";
 import { cn } from "@/lib/utils";
+import type { Category, Transaction } from "@/types";
 
-type Transaction = {
+type TransactionRow = {
   amount: string;
   category: string;
+  categoryId: string;
   categoryVariant: TagProps["variant"];
   date: string;
   description: string;
@@ -48,15 +53,6 @@ const filterOptions = {
     { label: "Income", value: "income" },
     { label: "Expense", value: "expense" },
   ],
-  category: [
-    { label: "All", value: "all" },
-    { label: "Food", value: "food" },
-    { label: "Transport", value: "transport" },
-    { label: "Market", value: "market" },
-    { label: "Investment", value: "investment" },
-    { label: "Utilities", value: "utilities" },
-    { label: "Salary", value: "salary" },
-  ],
   period: [
     { label: "November / 2025", value: "2025-11" },
     { label: "December / 2025", value: "2025-12" },
@@ -64,96 +60,57 @@ const filterOptions = {
   ],
 } satisfies Record<string, SelectOption[]>;
 
-const transactions: Transaction[] = [
-  {
-    description: "Dinner at restaurant",
-    date: "11/30/25",
-    category: "Food",
-    categoryVariant: "blue",
-    amount: "- R$ 89,50",
-    type: "expense",
-    icon: Utensils,
-    iconClassName: "bg-[var(--blue-light)] text-[var(--blue-base)]",
-  },
-  {
-    description: "Gas station",
-    date: "11/29/25",
-    category: "Transport",
-    categoryVariant: "purple",
-    amount: "- R$ 100,00",
-    type: "expense",
-    icon: Fuel,
-    iconClassName: "bg-[var(--purple-light)] text-[var(--purple-base)]",
-  },
-  {
-    description: "Market shopping",
-    date: "11/28/25",
-    category: "Market",
-    categoryVariant: "orange",
-    amount: "- R$ 156,80",
-    type: "expense",
-    icon: ShoppingCart,
-    iconClassName: "bg-[var(--orange-light)] text-[var(--orange-base)]",
-  },
-  {
-    description: "Investment return",
-    date: "11/26/25",
-    category: "Investment",
-    categoryVariant: "green",
-    amount: "+ R$ 340,25",
-    type: "income",
-    icon: RefreshCw,
-    iconClassName: "bg-[var(--green-light)] text-[var(--green-base)]",
-  },
-  {
-    description: "Rent",
-    date: "11/26/25",
-    category: "Utilities",
-    categoryVariant: "yellow",
-    amount: "- R$ 1.700,00",
-    type: "expense",
-    icon: Gift,
-    iconClassName: "bg-[var(--yellow-light)] text-[var(--yellow-base)]",
-  },
-  {
-    description: "Freelance",
-    date: "11/24/25",
-    category: "Salary",
-    categoryVariant: "green",
-    amount: "+ R$ 2.500,00",
-    type: "income",
-    icon: BriefcaseBusiness,
-    iconClassName: "bg-[var(--green-light)] text-[var(--green-base)]",
-  },
-  {
-    description: "Grocery shopping",
-    date: "11/22/25",
-    category: "Market",
-    categoryVariant: "orange",
-    amount: "- R$ 150,00",
-    type: "expense",
-    icon: ShoppingCart,
-    iconClassName: "bg-[var(--orange-light)] text-[var(--orange-base)]",
-  },
-  {
-    description: "Cinema",
-    date: "12/18/25",
-    category: "Entertainment",
-    categoryVariant: "pink",
-    amount: "- R$ 88,00",
-    type: "expense",
-    icon: Clapperboard,
-    iconClassName: "bg-[var(--pink-light)] text-[var(--pink-base)]",
-  },
-];
+const categoryIconByValue: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
+  education: Gift,
+  entertainment: Clapperboard,
+  fitness: RefreshCw,
+  food: Utensils,
+  gifts: Gift,
+  health: Gift,
+  home: Gift,
+  income: WalletCards,
+  pets: ShoppingCart,
+  savings: RefreshCw,
+  shopping: ShoppingCart,
+  transport: Fuel,
+  utilities: Gift,
+  work: BriefcaseBusiness,
+};
 
-function toTransactionFormValues(transaction: Transaction): TransactionFormValues {
+const categoryIconToneByColor = {
+  blue: "bg-[var(--blue-light)] text-[var(--blue-base)]",
+  gray: "bg-[var(--gray-200)] text-[var(--gray-700)]",
+  green: "bg-[var(--green-light)] text-[var(--green-base)]",
+  orange: "bg-[var(--orange-light)] text-[var(--orange-base)]",
+  pink: "bg-[var(--pink-light)] text-[var(--pink-base)]",
+  purple: "bg-[var(--purple-light)] text-[var(--purple-base)]",
+  red: "bg-[var(--red-light)] text-[var(--red-base)]",
+  yellow: "bg-[var(--yellow-light)] text-[var(--yellow-base)]",
+} satisfies Record<NonNullable<TagProps["variant"]>, string>;
+
+const getCategoryColor = (colour?: string): NonNullable<TagProps["variant"]> => {
+  if (colour && colour in categoryIconToneByColor) {
+    return colour as NonNullable<TagProps["variant"]>;
+  }
+
+  return "gray";
+};
+
+const getCategoryIcon = (icon?: string) => {
+  if (!icon) {
+    return BriefcaseBusiness;
+  }
+
+  return categoryIconByValue[icon] ?? BriefcaseBusiness;
+};
+
+function toTransactionFormValues(transaction: TransactionRow): TransactionFormValues {
   return {
     amount: transaction.amount
       .replace(/^[+-]\s*R\$\s*/, "")
       .replace(/\./g, "")
       .replace(",", "."),
-    category: transaction.category.toLowerCase(),
+    categoryId: transaction.categoryId,
     date: toInputDate(transaction.date),
     description: transaction.description,
     type: transaction.type,
@@ -161,12 +118,68 @@ function toTransactionFormValues(transaction: Transaction): TransactionFormValue
 }
 
 function toInputDate(date: string) {
+  if (date.includes("-")) {
+    return date.slice(0, 10);
+  }
+
   const [month, day, year] = date.split("/");
 
   return `20${year}-${month}-${day}`;
 }
 
+function formatCurrency(amount: number, type: Transaction["type"]) {
+  const formattedAmount = new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(amount);
+
+  return `${type === "income" ? "+" : "-"} ${formattedAmount}`;
+}
+
+function formatDate(date: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+    timeZone: "UTC",
+  }).format(new Date(date));
+}
+
+function toTransactionRow(transaction: Transaction): TransactionRow {
+  const category = transaction.category;
+  const categoryVariant = getCategoryColor(category?.colour);
+
+  return {
+    amount: formatCurrency(transaction.amount, transaction.type),
+    category: category?.title ?? "Uncategorized",
+    categoryId: transaction.categoryId,
+    categoryVariant,
+    date: formatDate(transaction.date),
+    description: transaction.description,
+    icon: getCategoryIcon(category?.icon),
+    iconClassName: categoryIconToneByColor[categoryVariant],
+    type: transaction.type,
+  };
+}
+
+function getCategoryFilterOptions(categories: Category[]): SelectOption[] {
+  return [
+    { label: "All", value: "all" },
+    ...categories.map((category) => ({
+      label: category.title,
+      value: category.id,
+    })),
+  ];
+}
+
 function TransactionsPage() {
+  const transactionsQuery = useTransactionsQuery();
+  const categoriesQuery = useCategoriesQuery();
+  const transactions = transactionsQuery.data ?? [];
+  const categoryFilterOptions = getCategoryFilterOptions(categoriesQuery.data ?? []);
+  const firstResult = transactions.length > 0 ? 1 : 0;
+  const lastResult = transactions.length;
+
   return (
     <main className="min-h-screen bg-[var(--gray-100)]">
       <Navbar activeItem="Transactions" userInitials="CT" />
@@ -200,7 +213,7 @@ function TransactionsPage() {
               icon={<Search />}
             />
             <Select label="Type" defaultValue="all" options={filterOptions.type} />
-            <Select label="Category" defaultValue="all" options={filterOptions.category} />
+            <Select label="Category" defaultValue="all" options={categoryFilterOptions} />
             <Select label="Period" defaultValue="2025-11" options={filterOptions.period} />
           </div>
         </Card>
@@ -219,7 +232,7 @@ function TransactionsPage() {
                 </tr>
               </thead>
               <tbody>
-                {transactions.map((transaction) => (
+                {transactions.map(toTransactionRow).map((transaction) => (
                   <TransactionTableRow
                     key={`${transaction.description}-${transaction.date}`}
                     {...transaction}
@@ -229,8 +242,24 @@ function TransactionsPage() {
             </table>
           </div>
 
+          {transactionsQuery.isLoading ? (
+            <TransactionStatus message="Loading transactions..." />
+          ) : null}
+
+          {transactionsQuery.isError ? (
+            <TransactionStatus message={transactionsQuery.error.message} />
+          ) : null}
+
+          {!transactionsQuery.isLoading &&
+          !transactionsQuery.isError &&
+          transactions.length === 0 ? (
+            <TransactionStatus message="No transactions yet." />
+          ) : null}
+
           <footer className="flex flex-col gap-4 border-t border-[var(--gray-200)] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm leading-5 text-[var(--gray-700)]">1 to 10 | 27 results</p>
+            <p className="text-sm leading-5 text-[var(--gray-700)]">
+              {firstResult} to {lastResult} | {transactions.length} results
+            </p>
 
             <div className="flex items-center gap-2">
               <IconButton type="button" aria-label="Previous page" icon={<ChevronLeft />} />
@@ -261,13 +290,14 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
 function TransactionTableRow({
   amount,
   category,
+  categoryId,
   categoryVariant,
   date,
   description,
   icon: Icon,
   iconClassName,
   type,
-}: Transaction) {
+}: TransactionRow) {
   const TypeIcon = type === "income" ? CircleArrowUp : CircleArrowDown;
 
   return (
@@ -327,6 +357,7 @@ function TransactionTableRow({
             defaultValues={toTransactionFormValues({
               amount,
               category,
+              categoryId,
               categoryVariant,
               date,
               description,
@@ -341,6 +372,14 @@ function TransactionTableRow({
         </div>
       </td>
     </tr>
+  );
+}
+
+function TransactionStatus({ message }: { message: string }) {
+  return (
+    <div className="border-t border-[var(--gray-200)] px-6 py-8">
+      <p className="text-sm leading-5 text-[var(--gray-600)]">{message}</p>
+    </div>
   );
 }
 

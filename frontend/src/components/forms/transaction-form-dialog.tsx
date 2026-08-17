@@ -1,6 +1,6 @@
 import { CircleArrowDown, CircleArrowUp } from "lucide-react";
 import type * as React from "react";
-import { useId } from "react";
+import { useId, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,11 +14,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, type SelectOption } from "@/components/ui/select";
+import { useCategoriesQuery } from "@/hooks/use-categories-query";
+import { useCreateTransactionMutation } from "@/hooks/use-create-transaction-mutation";
 import { cn } from "@/lib/utils";
 
 type TransactionFormValues = {
   amount?: string;
-  category?: string;
+  categoryId?: string;
   date?: string;
   description?: string;
   type?: "expense" | "income";
@@ -30,28 +32,46 @@ type TransactionFormDialogProps = {
   trigger: React.ReactElement;
 };
 
-const categoryOptions = [
-  { label: "Food", value: "food" },
-  { label: "Transport", value: "transport" },
-  { label: "Market", value: "market" },
-  { label: "Investment", value: "investment" },
-  { label: "Utilities", value: "utilities" },
-  { label: "Salary", value: "salary" },
-  { label: "Entertainment", value: "entertainment" },
-] satisfies SelectOption[];
-
 function TransactionFormDialog({ defaultValues, mode, trigger }: TransactionFormDialogProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const categoriesQuery = useCategoriesQuery();
+  const createTransactionMutation = useCreateTransactionMutation();
+  const categoryOptions = getCategoryOptions(categoriesQuery.data ?? []);
   const defaultType = defaultValues?.type ?? "expense";
-  const defaultCategory = defaultValues?.category ?? "food";
+  const defaultCategoryId = defaultValues?.categoryId ?? categoryOptions[0]?.value ?? null;
   const isEditing = mode === "edit";
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    // TODO: wire transaction form submission to the API.
+
+    if (isEditing || !defaultCategoryId) {
+      return;
+    }
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const rawDate = String(formData.get("date") ?? "");
+    const rawAmount = String(formData.get("amount") ?? "0");
+
+    createTransactionMutation.mutate(
+      {
+        amount: Number(rawAmount.replace(",", ".")),
+        categoryId: String(formData.get("categoryId") ?? defaultCategoryId),
+        date: new Date(`${rawDate}T00:00:00.000Z`).toISOString(),
+        description: String(formData.get("description") ?? ""),
+        type: String(formData.get("type") ?? defaultType) as "expense" | "income",
+      },
+      {
+        onSuccess: () => {
+          form.reset();
+          setIsOpen(false);
+        },
+      },
+    );
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger render={trigger} />
       <DialogContent className="max-w-[448px] gap-0 rounded-[8px] p-6 sm:max-w-[448px]">
         <DialogHeader className="mb-7 gap-1 pr-10">
@@ -70,12 +90,14 @@ function TransactionFormDialog({ defaultValues, mode, trigger }: TransactionForm
               defaultChecked={defaultType === "expense"}
               icon={<CircleArrowDown />}
               label="Expense"
+              disabled={createTransactionMutation.isPending}
               value="expense"
             />
             <TransactionTypeOption
               defaultChecked={defaultType === "income"}
               icon={<CircleArrowUp />}
               label="Income"
+              disabled={createTransactionMutation.isPending}
               value="income"
             />
           </fieldset>
@@ -85,6 +107,7 @@ function TransactionFormDialog({ defaultValues, mode, trigger }: TransactionForm
             name="description"
             placeholder="Ex. Lunch at a restaurant"
             defaultValue={defaultValues?.description}
+            disabled={createTransactionMutation.isPending}
             required
           />
 
@@ -94,20 +117,50 @@ function TransactionFormDialog({ defaultValues, mode, trigger }: TransactionForm
               name="date"
               type="date"
               defaultValue={defaultValues?.date}
+              disabled={createTransactionMutation.isPending}
               required
             />
-            <AmountField defaultValue={defaultValues?.amount ?? "0.00"} />
+            <AmountField
+              defaultValue={defaultValues?.amount ?? "0.00"}
+              disabled={createTransactionMutation.isPending}
+            />
           </div>
 
           <Select
             label="Category"
-            name="category"
-            defaultValue={defaultCategory}
+            name="categoryId"
+            defaultValue={defaultCategoryId}
+            disabled={
+              categoriesQuery.isLoading ||
+              createTransactionMutation.isPending ||
+              categoryOptions.length === 0
+            }
             options={categoryOptions}
           />
 
-          <Button type="submit" size="label" className="mt-1 w-full text-base leading-6">
-            Save
+          {categoryOptions.length === 0 && !categoriesQuery.isLoading ? (
+            <p className="text-sm leading-5 text-[var(--red-base)]">
+              Create a category before adding a transaction.
+            </p>
+          ) : null}
+
+          {createTransactionMutation.isError ? (
+            <p className="text-sm leading-5 text-[var(--red-base)]">
+              {createTransactionMutation.error.message}
+            </p>
+          ) : null}
+
+          <Button
+            type="submit"
+            size="label"
+            className="mt-1 w-full text-base leading-6"
+            disabled={
+              categoriesQuery.isLoading ||
+              createTransactionMutation.isPending ||
+              categoryOptions.length === 0
+            }
+          >
+            {createTransactionMutation.isPending ? "Saving..." : "Save"}
           </Button>
         </form>
       </DialogContent>
@@ -115,7 +168,7 @@ function TransactionFormDialog({ defaultValues, mode, trigger }: TransactionForm
   );
 }
 
-function AmountField({ defaultValue }: { defaultValue: string }) {
+function AmountField({ defaultValue, disabled }: { defaultValue: string; disabled?: boolean }) {
   const id = useId();
 
   return (
@@ -133,8 +186,9 @@ function AmountField({ defaultValue }: { defaultValue: string }) {
           name="amount"
           inputMode="decimal"
           defaultValue={defaultValue}
+          disabled={disabled}
           required
-          className="min-w-0 flex-1 bg-transparent text-base leading-6 text-[var(--gray-800)] outline-none placeholder:text-[var(--gray-400)]"
+          className="min-w-0 flex-1 bg-transparent text-base leading-6 text-[var(--gray-800)] outline-none placeholder:text-[var(--gray-400)] disabled:cursor-not-allowed disabled:text-[var(--gray-500)]"
         />
       </div>
     </div>
@@ -143,11 +197,13 @@ function AmountField({ defaultValue }: { defaultValue: string }) {
 
 function TransactionTypeOption({
   defaultChecked,
+  disabled,
   icon,
   label,
   value,
 }: {
   defaultChecked: boolean;
+  disabled?: boolean;
   icon: React.ReactElement;
   label: string;
   value: TransactionFormValues["type"];
@@ -159,6 +215,7 @@ function TransactionTypeOption({
         name="type"
         value={value}
         defaultChecked={defaultChecked}
+        disabled={disabled}
         required
         className="peer sr-only"
       />
@@ -176,6 +233,13 @@ function TransactionTypeOption({
     </Label>
   );
 }
+
+const getCategoryOptions = (categories: { id: string; title: string }[]): SelectOption[] => {
+  return categories.map((category) => ({
+    label: category.title,
+    value: category.id,
+  }));
+};
 
 export type { TransactionFormDialogProps, TransactionFormValues };
 export { TransactionFormDialog };

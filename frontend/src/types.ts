@@ -35,3 +35,25 @@ export interface CreateCategoryInput {
   icon: string;
   colour: string;
 }
+
+export type TransactionType = "expense" | "income";
+
+export interface Transaction {
+  id: string;
+  description: string;
+  date: string;
+  amount: number;
+  categoryId: string;
+  type: TransactionType;
+  category: Category | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateTransactionInput {
+  description: string;
+  date: string;
+  amount: number;
+  categoryId: string;
+  type: TransactionType;
+}
