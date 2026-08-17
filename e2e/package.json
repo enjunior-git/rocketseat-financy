@@ -1,0 +1,15 @@
+{
+  "name": "e2e",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "start:backend": "mkdir -p .tmp && pnpm --filter @rocketseat-financy/backend exec prisma db push --url file:../e2e/.tmp/e2e.db --schema prisma/schema.prisma && DATABASE_URL=file:../e2e/.tmp/e2e.db JWT_SECRET=e2e-secret CORS_ORIGIN=http://127.0.0.1:5173 pnpm --filter @rocketseat-financy/backend exec tsx ./src/index.ts",
+    "start:frontend": "pnpm --filter frontend dev --host 127.0.0.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1"
+  }
+}

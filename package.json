@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
+    "test:e2e": "pnpm --filter e2e test",
     "format": "biome format --write .",
     "format:check": "biome format .",
     "lint": "biome lint .",

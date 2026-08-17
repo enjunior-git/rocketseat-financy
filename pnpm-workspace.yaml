@@ -1,5 +1,6 @@
 packages:
   - backend
+  - e2e
   - frontend
 allowBuilds:
   "@apollo/protobufjs": true
