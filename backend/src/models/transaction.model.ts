@@ -23,6 +23,9 @@ export class TransactionModel {
   @Field(() => String)
   categoryId!: string;
 
+  @Field(() => String)
+  userId!: string;
+
   @Field(() => CategoryModel, { nullable: true })
   category?: CategoryModel | null;
 

@@ -18,6 +18,9 @@ export class CategoryModel {
   @Field(() => String)
   colour!: string;
 
+  @Field(() => String)
+  userId!: string;
+
   @Field(() => [TransactionModel], { nullable: true })
   transactions?: TransactionModel[] | null;
 

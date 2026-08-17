@@ -2,10 +2,13 @@ import { expect, it } from "vitest";
 import { TransactionType } from "../../../generated/prisma/enums.js";
 import { TransactionService } from "../../../src/services/transaction.service.js";
 import { integrationRunner } from "../../helpers/integration-runner.js";
+import { createTestUser } from "../../helpers/user.js";
 
 integrationRunner("TransactionService.summary", (getContext) => {
   it("returns monthly totals, all-time balance, category metrics, and the most used category", async () => {
     const service = new TransactionService(getContext().prisma);
+    const user = await createTestUser(getContext().prisma);
+    const otherUser = await createTestUser(getContext().prisma, "other@example.com");
     const [salary, food, travel] = await Promise.all([
       getContext().prisma.category.create({
         data: {
@@ -13,6 +16,7 @@ integrationRunner("TransactionService.summary", (getContext) => {
           description: "Work income",
           icon: "briefcase",
           colour: "#0ea5e9",
+          userId: user.id,
         },
       }),
       getContext().prisma.category.create({
@@ -21,6 +25,7 @@ integrationRunner("TransactionService.summary", (getContext) => {
           description: "Groceries and restaurants",
           icon: "utensils",
           colour: "#22c55e",
+          userId: user.id,
         },
       }),
       getContext().prisma.category.create({
@@ -29,9 +34,19 @@ integrationRunner("TransactionService.summary", (getContext) => {
           description: "Transport",
           icon: "plane",
           colour: "#f97316",
+          userId: user.id,
         },
       }),
     ]);
+    const otherCategory = await getContext().prisma.category.create({
+      data: {
+        title: "Other",
+        description: "Other user's category",
+        icon: "circle",
+        colour: "#64748b",
+        userId: otherUser.id,
+      },
+    });
 
     await getContext().prisma.transaction.createMany({
       data: [
@@ -40,6 +55,7 @@ integrationRunner("TransactionService.summary", (getContext) => {
           date: new Date("2026-08-01T00:00:00.000Z"),
           amount: 5000,
           categoryId: salary.id,
+          userId: user.id,
           type: TransactionType.income,
         },
         {
@@ -47,6 +63,7 @@ integrationRunner("TransactionService.summary", (getContext) => {
           date: new Date("2026-08-02T00:00:00.000Z"),
           amount: 120,
           categoryId: food.id,
+          userId: user.id,
           type: TransactionType.expense,
         },
         {
@@ -54,6 +71,7 @@ integrationRunner("TransactionService.summary", (getContext) => {
           date: new Date("2026-08-03T00:00:00.000Z"),
           amount: 80,
           categoryId: food.id,
+          userId: user.id,
           type: TransactionType.expense,
         },
         {
@@ -61,6 +79,7 @@ integrationRunner("TransactionService.summary", (getContext) => {
           date: new Date("2026-07-20T00:00:00.000Z"),
           amount: 50,
           categoryId: travel.id,
+          userId: user.id,
           type: TransactionType.expense,
         },
         {
@@ -68,12 +87,21 @@ integrationRunner("TransactionService.summary", (getContext) => {
           date: new Date("2026-07-15T00:00:00.000Z"),
           amount: 1000,
           categoryId: salary.id,
+          userId: user.id,
+          type: TransactionType.income,
+        },
+        {
+          description: "Other income",
+          date: new Date("2026-08-01T00:00:00.000Z"),
+          amount: 9999,
+          categoryId: otherCategory.id,
+          userId: otherUser.id,
           type: TransactionType.income,
         },
       ],
     });
 
-    const summary = await service.summary(new Date("2026-08-16T00:00:00.000Z"));
+    const summary = await service.summary(user.id, new Date("2026-08-16T00:00:00.000Z"));
 
     expect(summary).toMatchObject({
       totalIncomeMonthly: 5000,
@@ -118,8 +146,9 @@ integrationRunner("TransactionService.summary", (getContext) => {
 
   it("returns zero totals and no most used category when there are no transactions", async () => {
     const service = new TransactionService(getContext().prisma);
+    const user = await createTestUser(getContext().prisma);
 
-    const summary = await service.summary(new Date("2026-08-16T00:00:00.000Z"));
+    const summary = await service.summary(user.id, new Date("2026-08-16T00:00:00.000Z"));
 
     expect(summary).toMatchObject({
       totalIncomeMonthly: 0,

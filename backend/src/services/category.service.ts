@@ -12,43 +12,52 @@ export type UpdateCategoryInput = Partial<CreateCategoryInput>;
 export class CategoryService {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async create(input: CreateCategoryInput): Promise<Category> {
+  async create(input: CreateCategoryInput, userId: string): Promise<Category> {
     return this.prisma.category.create({
-      data: input,
+      data: {
+        ...input,
+        userId,
+      },
     });
   }
 
-  async list(): Promise<Category[]> {
+  async list(userId: string): Promise<Category[]> {
     return this.prisma.category.findMany({
+      where: {
+        userId,
+      },
       orderBy: {
         createdAt: "asc",
       },
     });
   }
 
-  async find(id: string): Promise<Category | null> {
-    return this.prisma.category.findUnique({
+  async find(id: string, userId: string): Promise<Category | null> {
+    return this.prisma.category.findFirst({
       where: {
         id,
+        userId,
       },
     });
   }
 
-  async countTransactions(categoryId: string): Promise<number> {
+  async countTransactions(categoryId: string, userId: string): Promise<number> {
     return this.prisma.transaction.count({
       where: {
         categoryId,
+        userId,
       },
     });
   }
 
-  async sumExpenses(categoryId: string): Promise<number> {
+  async sumExpenses(categoryId: string, userId: string): Promise<number> {
     const aggregate = await this.prisma.transaction.aggregate({
       _sum: {
         amount: true,
       },
       where: {
         categoryId,
+        userId,
         type: "expense",
       },
     });
@@ -56,8 +65,8 @@ export class CategoryService {
     return aggregate._sum.amount ?? 0;
   }
 
-  async update(id: string, input: UpdateCategoryInput): Promise<Category> {
-    const category = await this.find(id);
+  async update(id: string, input: UpdateCategoryInput, userId: string): Promise<Category> {
+    const category = await this.find(id, userId);
 
     if (!category) {
       throw new Error("Category not found");
@@ -76,8 +85,8 @@ export class CategoryService {
     });
   }
 
-  async delete(id: string): Promise<Category> {
-    const category = await this.find(id);
+  async delete(id: string, userId: string): Promise<Category> {
+    const category = await this.find(id, userId);
 
     if (!category) {
       throw new Error("Category not found");

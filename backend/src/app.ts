@@ -6,6 +6,7 @@ import cors from "cors";
 import express, { type Express } from "express";
 import { buildSchema } from "type-graphql";
 import { ENV } from "./env.js";
+import { buildContext } from "./graphql/context.js";
 import { AuthResolver } from "./resolvers/auth.resolver.js";
 import { CategoryResolver } from "./resolvers/category.resolver.js";
 import { HealthcheckResolver } from "./resolvers/healthcheck.resolver.js";
@@ -43,7 +44,7 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Graphql
 
   await server.start();
 
-  app.use("/graphql", express.json(), expressMiddleware(server));
+  app.use("/graphql", express.json(), expressMiddleware(server, { context: buildContext }));
 
   return {
     app,

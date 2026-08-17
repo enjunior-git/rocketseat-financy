@@ -20,6 +20,7 @@ type CategoryModel {
   transactions: [TransactionModel!]
   transactionsAmount: Float!
   updatedAt: DateTimeISO!
+  userId: String!
 }
 
 type CategoryTransactionSummaryModel {
@@ -91,6 +92,7 @@ type TransactionModel {
   id: ID!
   type: TransactionType!
   updatedAt: DateTimeISO!
+  userId: String!
 }
 
 type TransactionSummaryModel {

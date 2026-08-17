@@ -2,16 +2,19 @@ import { expect, it } from "vitest";
 import { TransactionType } from "../../../generated/prisma/enums.js";
 import { TransactionService } from "../../../src/services/transaction.service.js";
 import { integrationRunner } from "../../helpers/integration-runner.js";
+import { createTestUser } from "../../helpers/user.js";
 
 integrationRunner("TransactionService.update", (getContext) => {
   it("persists the updated transaction fields", async () => {
     const service = new TransactionService(getContext().prisma);
+    const user = await createTestUser(getContext().prisma);
     const category = await getContext().prisma.category.create({
       data: {
         title: "Salary",
         description: "Work income",
         icon: "briefcase",
         colour: "#0ea5e9",
+        userId: user.id,
       },
     });
     const transaction = await getContext().prisma.transaction.create({
@@ -20,14 +23,19 @@ integrationRunner("TransactionService.update", (getContext) => {
         date: new Date("2026-08-01T00:00:00.000Z"),
         amount: 5000,
         categoryId: category.id,
+        userId: user.id,
         type: TransactionType.income,
       },
     });
 
-    await service.update(transaction.id, {
-      description: "Updated paycheck",
-      amount: 5100,
-    });
+    await service.update(
+      transaction.id,
+      {
+        description: "Updated paycheck",
+        amount: 5100,
+      },
+      user.id,
+    );
 
     const persistedTransaction = await getContext().prisma.transaction.findUnique({
       where: {
@@ -41,6 +49,7 @@ integrationRunner("TransactionService.update", (getContext) => {
       date: new Date("2026-08-01T00:00:00.000Z"),
       amount: 5100,
       categoryId: category.id,
+      userId: user.id,
       type: TransactionType.income,
     });
   });

@@ -38,16 +38,22 @@ export type TransactionSummary = {
 export class TransactionService {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async create(input: CreateTransactionInput): Promise<Transaction> {
-    await this.assertCategoryExists(input.categoryId);
+  async create(input: CreateTransactionInput, userId: string): Promise<Transaction> {
+    await this.assertCategoryExists(input.categoryId, userId);
 
     return this.prisma.transaction.create({
-      data: input,
+      data: {
+        ...input,
+        userId,
+      },
     });
   }
 
-  async list(): Promise<TransactionWithCategory[]> {
+  async list(userId: string): Promise<TransactionWithCategory[]> {
     return this.prisma.transaction.findMany({
+      where: {
+        userId,
+      },
       include: {
         category: true,
       },
@@ -57,10 +63,11 @@ export class TransactionService {
     });
   }
 
-  async find(id: string): Promise<TransactionWithCategory | null> {
-    return this.prisma.transaction.findUnique({
+  async find(id: string, userId: string): Promise<TransactionWithCategory | null> {
+    return this.prisma.transaction.findFirst({
       where: {
         id,
+        userId,
       },
       include: {
         category: true,
@@ -68,7 +75,7 @@ export class TransactionService {
     });
   }
 
-  async summary(referenceDate = new Date()): Promise<TransactionSummary> {
+  async summary(userId: string, referenceDate = new Date()): Promise<TransactionSummary> {
     const monthStart = new Date(
       Date.UTC(referenceDate.getUTCFullYear(), referenceDate.getUTCMonth(), 1),
     );
@@ -77,6 +84,9 @@ export class TransactionService {
     );
 
     const categories = await this.prisma.category.findMany({
+      where: {
+        userId,
+      },
       include: {
         transactions: true,
       },
@@ -111,15 +121,15 @@ export class TransactionService {
     };
   }
 
-  async update(id: string, input: UpdateTransactionInput): Promise<Transaction> {
-    const transaction = await this.find(id);
+  async update(id: string, input: UpdateTransactionInput, userId: string): Promise<Transaction> {
+    const transaction = await this.find(id, userId);
 
     if (!transaction) {
       throw new Error("Transaction not found");
     }
 
     if (input.categoryId) {
-      await this.assertCategoryExists(input.categoryId);
+      await this.assertCategoryExists(input.categoryId, userId);
     }
 
     return this.prisma.transaction.update({
@@ -136,8 +146,8 @@ export class TransactionService {
     });
   }
 
-  async delete(id: string): Promise<Transaction> {
-    const transaction = await this.find(id);
+  async delete(id: string, userId: string): Promise<Transaction> {
+    const transaction = await this.find(id, userId);
 
     if (!transaction) {
       throw new Error("Transaction not found");
@@ -150,10 +160,11 @@ export class TransactionService {
     });
   }
 
-  private async assertCategoryExists(categoryId: string): Promise<void> {
-    const category = await this.prisma.category.findUnique({
+  private async assertCategoryExists(categoryId: string, userId: string): Promise<void> {
+    const category = await this.prisma.category.findFirst({
       where: {
         id: categoryId,
+        userId,
       },
     });
 
