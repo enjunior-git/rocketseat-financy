@@ -14,6 +14,10 @@ import {
   Utensils,
 } from "lucide-react";
 
+import {
+  CategoryFormDialog,
+  type CategoryFormValues,
+} from "@/components/forms/category-form-dialog";
 import { Navbar } from "@/components/navigation/navbar";
 import { ActionAlertDialog } from "@/components/ui/action-alert-dialog";
 import { Button } from "@/components/ui/button";
@@ -30,6 +34,25 @@ type CategoryCard = {
   title: string;
   variant: TagProps["variant"];
 };
+
+const categoryIconByTitle = {
+  Entertainment: "entertainment",
+  Food: "food",
+  Health: "health",
+  Investment: "savings",
+  Market: "shopping",
+  Salary: "work",
+  Transport: "transport",
+  Utilities: "utilities",
+} satisfies Record<string, CategoryFormValues["icon"]>;
+
+function getCategoryIcon(title: string) {
+  return categoryIconByTitle[title as keyof typeof categoryIconByTitle] ?? "work";
+}
+
+function getCategoryColor(variant: TagProps["variant"]) {
+  return variant && variant !== "gray" ? variant : "green";
+}
 
 type CategoryStat = {
   helper: string;
@@ -140,7 +163,8 @@ function CategoriesPage() {
             </p>
           </div>
 
-          <TodoAlertDialog
+          <CategoryFormDialog
+            mode="create"
             trigger={
               <Button type="button" size="label-sm" className="w-fit">
                 <Plus />
@@ -217,7 +241,14 @@ function CategoryCard({
               />
             }
           />
-          <TodoAlertDialog
+          <CategoryFormDialog
+            mode="edit"
+            defaultValues={{
+              color: getCategoryColor(variant),
+              description,
+              icon: getCategoryIcon(title),
+              title,
+            }}
             trigger={<IconButton type="button" aria-label={`Edit ${title}`} icon={<Pencil />} />}
           />
         </div>
@@ -233,18 +264,6 @@ function CategoryCard({
         <span className="text-sm leading-5 text-[var(--gray-600)]">{items}</span>
       </footer>
     </Card>
-  );
-}
-
-function TodoAlertDialog({ trigger }: { trigger: React.ReactElement }) {
-  return (
-    <ActionAlertDialog
-      title="Feature coming soon"
-      description="This action is not available yet."
-      actionLabel="OK"
-      media={<Plus aria-hidden="true" className="text-[var(--brand-base)]" />}
-      trigger={trigger}
-    />
   );
 }
 

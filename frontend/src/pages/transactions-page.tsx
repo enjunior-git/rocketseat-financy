@@ -16,6 +16,10 @@ import {
   Utensils,
 } from "lucide-react";
 
+import {
+  TransactionFormDialog,
+  type TransactionFormValues,
+} from "@/components/forms/transaction-form-dialog";
 import { Navbar } from "@/components/navigation/navbar";
 import { ActionAlertDialog } from "@/components/ui/action-alert-dialog";
 import { Button } from "@/components/ui/button";
@@ -143,6 +147,25 @@ const transactions: Transaction[] = [
   },
 ];
 
+function toTransactionFormValues(transaction: Transaction): TransactionFormValues {
+  return {
+    amount: transaction.amount
+      .replace(/^[+-]\s*R\$\s*/, "")
+      .replace(/\./g, "")
+      .replace(",", "."),
+    category: transaction.category.toLowerCase(),
+    date: toInputDate(transaction.date),
+    description: transaction.description,
+    type: transaction.type,
+  };
+}
+
+function toInputDate(date: string) {
+  const [month, day, year] = date.split("/");
+
+  return `20${year}-${month}-${day}`;
+}
+
 function TransactionsPage() {
   return (
     <main className="min-h-screen bg-[var(--gray-100)]">
@@ -157,7 +180,8 @@ function TransactionsPage() {
             </p>
           </div>
 
-          <TodoAlertDialog
+          <TransactionFormDialog
+            mode="create"
             trigger={
               <Button type="button" size="label-sm" className="w-fit">
                 <Plus />
@@ -298,7 +322,18 @@ function TransactionTableRow({
               />
             }
           />
-          <TodoAlertDialog
+          <TransactionFormDialog
+            mode="edit"
+            defaultValues={toTransactionFormValues({
+              amount,
+              category,
+              categoryVariant,
+              date,
+              description,
+              icon: Icon,
+              iconClassName,
+              type,
+            })}
             trigger={
               <IconButton type="button" aria-label={`Edit ${description}`} icon={<Pencil />} />
             }
@@ -306,18 +341,6 @@ function TransactionTableRow({
         </div>
       </td>
     </tr>
-  );
-}
-
-function TodoAlertDialog({ trigger }: { trigger: React.ReactElement }) {
-  return (
-    <ActionAlertDialog
-      title="Feature coming soon"
-      description="This action is not available yet."
-      actionLabel="OK"
-      media={<Plus aria-hidden="true" className="text-[var(--brand-base)]" />}
-      trigger={trigger}
-    />
   );
 }
 

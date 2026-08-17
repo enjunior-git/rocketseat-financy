@@ -11,8 +11,8 @@ import {
   WalletCards,
 } from "lucide-react";
 
+import { TransactionFormDialog } from "@/components/forms/transaction-form-dialog";
 import { Navbar } from "@/components/navigation/navbar";
-import { ActionAlertDialog } from "@/components/ui/action-alert-dialog";
 import { Card } from "@/components/ui/card";
 import { Tag, type TagProps } from "@/components/ui/tag";
 import { cn } from "@/lib/utils";
@@ -184,11 +184,8 @@ function DashboardPage() {
               ))}
             </div>
 
-            <ActionAlertDialog
-              title="Feature coming soon"
-              description="This action is not available yet."
-              actionLabel="OK"
-              media={<Plus aria-hidden="true" className="text-[var(--brand-base)]" />}
+            <TransactionFormDialog
+              mode="create"
               trigger={
                 <button
                   type="button"
