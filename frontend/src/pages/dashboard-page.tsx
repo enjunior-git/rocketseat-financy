@@ -1,3 +1,4 @@
+import { Link, type LinkProps } from "@tanstack/react-router";
 import {
   BriefcaseBusiness,
   ChevronRight,
@@ -171,7 +172,7 @@ function DashboardPage() {
           <Card className="gap-0 overflow-hidden rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] py-0 ring-0">
             <DashboardSectionHeader
               title="Recent transactions"
-              actionHref="#transactions"
+              actionTo="/transactions"
               actionLabel="View all"
             />
 
@@ -201,7 +202,7 @@ function DashboardPage() {
           <Card className="h-fit gap-0 overflow-hidden rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] py-0 ring-0">
             <DashboardSectionHeader
               title="Categories"
-              actionHref="#categories"
+              actionTo="/categories"
               actionLabel="Manage"
             />
 
@@ -247,12 +248,12 @@ function SummaryCard({ amount, icon: Icon, label, tone }: SummaryCard) {
 }
 
 function DashboardSectionHeader({
-  actionHref,
   actionLabel,
+  actionTo,
   title,
 }: {
-  actionHref: string;
   actionLabel: string;
+  actionTo: LinkProps["to"];
   title: string;
 }) {
   return (
@@ -261,13 +262,13 @@ function DashboardSectionHeader({
         {title}
       </h2>
 
-      <a
-        href={actionHref}
+      <Link
+        to={actionTo}
         className="flex items-center gap-1.5 text-sm leading-5 font-medium text-[var(--brand-base)] transition-colors hover:text-[var(--brand-dark)]"
       >
         {actionLabel}
         <ChevronRight aria-hidden="true" className="size-4 stroke-[1.75]" />
-      </a>
+      </Link>
     </header>
   );
 }

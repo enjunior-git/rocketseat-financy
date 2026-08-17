@@ -1,8 +1,9 @@
+import { Link } from "@tanstack/react-router";
 import { LogIn } from "lucide-react";
 
 import Logo from "@/assets/logo.svg";
 import { RegisterForm } from "@/components/forms/register-form";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
 function RegisterPage() {
@@ -32,15 +33,17 @@ function RegisterPage() {
           <div className="flex flex-col items-center gap-4">
             <p className="text-sm leading-5 text-[var(--gray-600)]">Already have an account?</p>
 
-            <Button
-              type="button"
-              variant="outline"
-              size="label"
-              className="w-full text-base leading-6"
+            <Link
+              to="/login"
+              className={buttonVariants({
+                variant: "outline",
+                size: "label",
+                className: "w-full text-base leading-6",
+              })}
             >
               <LogIn />
               Sign in
-            </Button>
+            </Link>
           </div>
         </Card>
       </section>

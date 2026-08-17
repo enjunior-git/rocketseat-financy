@@ -1,8 +1,8 @@
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { apolloClient } from "@/lib/apollo";
 import { REGISTER_MUTATION } from "@/lib/graphql/mutations/Register";
 import type { RegisterInput, User } from "@/types";
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 type RegisterMutationData = {
   register: {
