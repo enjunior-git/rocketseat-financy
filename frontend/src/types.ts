@@ -16,3 +16,22 @@ export interface LoginInput {
   email: string;
   password: string;
 }
+
+export interface Category {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  colour: string;
+  transactionsAmount: number;
+  totalExpensesAmount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCategoryInput {
+  title: string;
+  description: string;
+  icon: string;
+  colour: string;
+}
