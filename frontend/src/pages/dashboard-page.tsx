@@ -13,6 +13,7 @@ import {
 
 import { Navbar } from "@/components/navigation/navbar";
 import { ActionAlertDialog } from "@/components/ui/action-alert-dialog";
+import { Card } from "@/components/ui/card";
 import { Tag, type TagProps } from "@/components/ui/tag";
 import { cn } from "@/lib/utils";
 
@@ -167,7 +168,7 @@ function DashboardPage() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
-          <section className="overflow-hidden rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)]">
+          <Card className="gap-0 overflow-hidden rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] py-0 ring-0">
             <DashboardSectionHeader
               title="Recent transactions"
               actionHref="#transactions"
@@ -198,9 +199,9 @@ function DashboardPage() {
                 </button>
               }
             />
-          </section>
+          </Card>
 
-          <section className="h-fit overflow-hidden rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)]">
+          <Card className="h-fit gap-0 overflow-hidden rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] py-0 ring-0">
             <DashboardSectionHeader
               title="Categories"
               actionHref="#categories"
@@ -223,7 +224,7 @@ function DashboardPage() {
                 </div>
               ))}
             </div>
-          </section>
+          </Card>
         </div>
       </section>
     </main>
@@ -232,7 +233,7 @@ function DashboardPage() {
 
 function SummaryCard({ amount, icon: Icon, label, tone }: SummaryCard) {
   return (
-    <article className="rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-6">
+    <Card className="gap-0 overflow-visible rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-6 ring-0">
       <div className="flex items-center gap-3">
         <Icon
           aria-hidden="true"
@@ -244,7 +245,7 @@ function SummaryCard({ amount, icon: Icon, label, tone }: SummaryCard) {
       </div>
 
       <p className="mt-5 text-[28px] leading-9 font-bold text-[var(--gray-800)]">{amount}</p>
-    </article>
+    </Card>
   );
 }
 

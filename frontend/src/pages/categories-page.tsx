@@ -17,6 +17,7 @@ import {
 import { Navbar } from "@/components/navigation/navbar";
 import { ActionAlertDialog } from "@/components/ui/action-alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { IconButton } from "@/components/ui/icon-button";
 import { Tag, type TagProps } from "@/components/ui/tag";
 import { cn } from "@/lib/utils";
@@ -167,7 +168,7 @@ function CategoriesPage() {
 
 function CategoryStatCard({ helper, icon: Icon, iconClassName, value }: CategoryStat) {
   return (
-    <article className="flex min-h-[108px] items-center gap-5 rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6">
+    <Card className="min-h-[108px] flex-row items-center gap-5 overflow-visible rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-0 ring-0">
       <Icon aria-hidden="true" className={cn("size-5 shrink-0 stroke-[1.75]", iconClassName)} />
 
       <div>
@@ -176,7 +177,7 @@ function CategoryStatCard({ helper, icon: Icon, iconClassName, value }: Category
           {helper}
         </p>
       </div>
-    </article>
+    </Card>
   );
 }
 
@@ -189,7 +190,7 @@ function CategoryCard({
   variant,
 }: CategoryCard) {
   return (
-    <article className="flex min-h-[228px] flex-col rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-6">
+    <Card className="min-h-[228px] gap-0 overflow-visible rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-6 ring-0">
       <header className="flex items-start justify-between gap-3">
         <span
           className={cn(
@@ -231,7 +232,7 @@ function CategoryCard({
         <Tag variant={variant}>{title}</Tag>
         <span className="text-sm leading-5 text-[var(--gray-600)]">{items}</span>
       </footer>
-    </article>
+    </Card>
   );
 }
 

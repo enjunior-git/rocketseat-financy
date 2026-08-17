@@ -3,6 +3,7 @@ import { LogIn } from "lucide-react";
 import Logo from "@/assets/logo.svg";
 import { RegisterForm } from "@/components/forms/register-form";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 function RegisterPage() {
   return (
@@ -10,7 +11,7 @@ function RegisterPage() {
       <section className="mx-auto flex w-full max-w-[448px] flex-col items-center gap-8">
         <img src={Logo} alt="Financy" className="h-8 w-auto" />
 
-        <div className="w-full rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-8 py-8 shadow-[0_1px_2px_rgb(17_24_39_/_0.02)] sm:px-8">
+        <Card className="w-full gap-0 overflow-visible rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-8 py-8 ring-0 shadow-[0_1px_2px_rgb(17_24_39_/_0.02)] sm:px-8">
           <header className="mb-9 text-center">
             <h1 className="text-[22px] leading-7 font-bold text-[var(--gray-800)]">
               Create account
@@ -41,7 +42,7 @@ function RegisterPage() {
               Sign in
             </Button>
           </div>
-        </div>
+        </Card>
       </section>
     </main>
   );

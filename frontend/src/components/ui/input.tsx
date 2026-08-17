@@ -1,5 +1,6 @@
 import { useId } from "react";
 
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
 type InputProps = Omit<React.ComponentProps<"input">, "prefix"> & {
@@ -29,7 +30,7 @@ function Input({
   return (
     <div className="group flex w-full flex-col gap-2" data-slot="input-root">
       {label ? (
-        <label
+        <Label
           htmlFor={inputId}
           className={cn(
             "text-sm leading-5 font-medium text-[var(--gray-800)] transition-colors group-focus-within:text-[var(--brand-base)]",
@@ -38,7 +39,7 @@ function Input({
           )}
         >
           {label}
-        </label>
+        </Label>
       ) : null}
 
       <div

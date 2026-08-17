@@ -19,6 +19,7 @@ import {
 import { Navbar } from "@/components/navigation/navbar";
 import { ActionAlertDialog } from "@/components/ui/action-alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { IconButton } from "@/components/ui/icon-button";
 import { Input } from "@/components/ui/input";
 import { PaginationButton } from "@/components/ui/pagination-button";
@@ -166,7 +167,7 @@ function TransactionsPage() {
           />
         </header>
 
-        <section className="mt-9 rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-6">
+        <Card className="mt-9 gap-0 overflow-visible rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-6 ring-0">
           <div className="grid gap-4 lg:grid-cols-4">
             <Input
               label="Search"
@@ -178,9 +179,9 @@ function TransactionsPage() {
             <Select label="Category" defaultValue="all" options={filterOptions.category} />
             <Select label="Period" defaultValue="2025-11" options={filterOptions.period} />
           </div>
-        </section>
+        </Card>
 
-        <section className="mt-9 overflow-hidden rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)]">
+        <Card className="mt-9 gap-0 overflow-hidden rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] py-0 ring-0">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[920px] table-fixed">
               <thead>
@@ -215,7 +216,7 @@ function TransactionsPage() {
               <IconButton type="button" aria-label="Next page" icon={<ChevronRight />} />
             </div>
           </footer>
-        </section>
+        </Card>
       </section>
     </main>
   );
