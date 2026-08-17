@@ -2,7 +2,7 @@ import { LogIn } from "lucide-react";
 
 import Logo from "@/assets/logo.svg";
 import { RegisterForm } from "@/components/forms/register-form";
-import { LabelButton } from "@/components/ui/label-button";
+import { Button } from "@/components/ui/button";
 
 function RegisterPage() {
   return (
@@ -31,10 +31,15 @@ function RegisterPage() {
           <div className="flex flex-col items-center gap-4">
             <p className="text-sm leading-5 text-[var(--gray-600)]">Already have an account?</p>
 
-            <LabelButton type="button" variant="outline" className="w-full text-base leading-6">
+            <Button
+              type="button"
+              variant="outline"
+              size="label"
+              className="w-full text-base leading-6"
+            >
               <LogIn />
               Sign in
-            </LabelButton>
+            </Button>
           </div>
         </div>
       </section>

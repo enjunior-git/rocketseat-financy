@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { UserRoundPlus } from "lucide-react";
 
-import { LabelButton } from "./label-button";
+import { Button } from "./button";
 
 const meta = {
-  title: "UI/LabelButton",
-  component: LabelButton,
+  title: "UI/Button/Label",
+  component: Button,
   parameters: {
     layout: "centered",
   },
@@ -13,46 +13,46 @@ const meta = {
   argTypes: {
     variant: {
       control: "inline-radio",
-      options: ["primary", "outline"],
+      options: ["default", "outline"],
     },
     size: {
       control: "inline-radio",
-      options: ["md", "sm"],
+      options: ["label", "label-sm"],
     },
     children: {
       control: "text",
     },
   },
   args: {
-    variant: "primary",
-    size: "md",
+    variant: "default",
+    size: "label",
     children: "Label",
   },
-} satisfies Meta<typeof LabelButton>;
+} satisfies Meta<typeof Button>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: (args) => (
-    <LabelButton {...args}>
+    <Button {...args}>
       <UserRoundPlus />
       {args.children}
-    </LabelButton>
+    </Button>
   ),
 };
 
-export const Medium: Story = {
+export const DefaultSize: Story = {
   render: () => (
     <div className="grid grid-cols-2 items-center gap-x-10">
-      <LabelButton variant="primary" size="md">
+      <Button variant="default" size="label">
         <UserRoundPlus />
         Label
-      </LabelButton>
-      <LabelButton variant="outline" size="md">
+      </Button>
+      <Button variant="outline" size="label">
         <UserRoundPlus />
         Label
-      </LabelButton>
+      </Button>
     </div>
   ),
 };
@@ -60,14 +60,14 @@ export const Medium: Story = {
 export const Small: Story = {
   render: () => (
     <div className="grid grid-cols-2 items-center gap-x-10">
-      <LabelButton variant="primary" size="sm">
+      <Button variant="default" size="label-sm">
         <UserRoundPlus />
         Label
-      </LabelButton>
-      <LabelButton variant="outline" size="sm">
+      </Button>
+      <Button variant="outline" size="label-sm">
         <UserRoundPlus />
         Label
-      </LabelButton>
+      </Button>
     </div>
   ),
 };

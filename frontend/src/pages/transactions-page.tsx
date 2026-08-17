@@ -17,9 +17,10 @@ import {
 } from "lucide-react";
 
 import { Navbar } from "@/components/navigation/navbar";
+import { ActionAlertDialog } from "@/components/ui/action-alert-dialog";
+import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
 import { Input } from "@/components/ui/input";
-import { LabelButton } from "@/components/ui/label-button";
 import { PaginationButton } from "@/components/ui/pagination-button";
 import { Select, type SelectOption } from "@/components/ui/select";
 import { Tag, type TagProps } from "@/components/ui/tag";
@@ -141,8 +142,6 @@ const transactions: Transaction[] = [
   },
 ];
 
-const showTodo = () => alert("TODO");
-
 function TransactionsPage() {
   return (
     <main className="min-h-screen bg-[var(--gray-100)]">
@@ -157,10 +156,14 @@ function TransactionsPage() {
             </p>
           </div>
 
-          <LabelButton type="button" size="sm" className="w-fit" onClick={showTodo}>
-            <Plus />
-            New transaction
-          </LabelButton>
+          <TodoAlertDialog
+            trigger={
+              <Button type="button" size="label-sm" className="w-fit">
+                <Plus />
+                New transaction
+              </Button>
+            }
+          />
         </header>
 
         <section className="mt-9 rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-6">
@@ -279,22 +282,41 @@ function TransactionTableRow({
       </td>
       <td className="px-6">
         <div className="ml-auto flex w-20 items-center justify-end gap-2">
-          <IconButton
-            type="button"
-            tone="danger"
-            aria-label={`Delete ${description}`}
-            icon={<Trash2 />}
-            onClick={showTodo}
+          <ActionAlertDialog
+            title="Delete transaction?"
+            description={`This will delete "${description}" from your transaction history.`}
+            actionLabel="Delete"
+            actionVariant="destructive"
+            media={<Trash2 aria-hidden="true" className="text-[var(--red-base)]" />}
+            trigger={
+              <IconButton
+                type="button"
+                tone="danger"
+                aria-label={`Delete ${description}`}
+                icon={<Trash2 />}
+              />
+            }
           />
-          <IconButton
-            type="button"
-            aria-label={`Edit ${description}`}
-            icon={<Pencil />}
-            onClick={showTodo}
+          <TodoAlertDialog
+            trigger={
+              <IconButton type="button" aria-label={`Edit ${description}`} icon={<Pencil />} />
+            }
           />
         </div>
       </td>
     </tr>
+  );
+}
+
+function TodoAlertDialog({ trigger }: { trigger: React.ReactElement }) {
+  return (
+    <ActionAlertDialog
+      title="Feature coming soon"
+      description="This action is not available yet."
+      actionLabel="OK"
+      media={<Plus aria-hidden="true" className="text-[var(--brand-base)]" />}
+      trigger={trigger}
+    />
   );
 }
 

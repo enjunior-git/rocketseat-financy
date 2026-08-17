@@ -2,7 +2,7 @@ import { UserRoundPlus } from "lucide-react";
 
 import Logo from "@/assets/logo.svg";
 import { LoginForm } from "@/components/forms/login-form";
-import { LabelButton } from "@/components/ui/label-button";
+import { Button } from "@/components/ui/button";
 
 function LoginPage() {
   return (
@@ -29,10 +29,15 @@ function LoginPage() {
           <div className="flex flex-col items-center gap-4">
             <p className="text-sm leading-5 text-[var(--gray-600)]">Don't have an account?</p>
 
-            <LabelButton type="button" variant="outline" className="w-full text-base leading-6">
+            <Button
+              type="button"
+              variant="outline"
+              size="label"
+              className="w-full text-base leading-6"
+            >
               <UserRoundPlus />
               Create account
-            </LabelButton>
+            </Button>
           </div>
         </div>
       </section>

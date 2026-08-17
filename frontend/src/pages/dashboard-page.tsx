@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { Navbar } from "@/components/navigation/navbar";
+import { ActionAlertDialog } from "@/components/ui/action-alert-dialog";
 import { Tag, type TagProps } from "@/components/ui/tag";
 import { cn } from "@/lib/utils";
 
@@ -182,14 +183,21 @@ function DashboardPage() {
               ))}
             </div>
 
-            <button
-              type="button"
-              className="flex h-16 w-full items-center justify-center gap-2 border-t border-[var(--gray-200)] text-sm leading-5 font-medium text-[var(--brand-base)] transition-colors hover:bg-[var(--green-light)] focus-visible:ring-2 focus-visible:ring-[var(--brand-base)] focus-visible:outline-none"
-              onClick={() => alert("TODO")}
-            >
-              <Plus aria-hidden="true" className="size-4 stroke-[1.75]" />
-              New transaction
-            </button>
+            <ActionAlertDialog
+              title="Feature coming soon"
+              description="This action is not available yet."
+              actionLabel="OK"
+              media={<Plus aria-hidden="true" className="text-[var(--brand-base)]" />}
+              trigger={
+                <button
+                  type="button"
+                  className="flex h-16 w-full items-center justify-center gap-2 border-t border-[var(--gray-200)] text-sm leading-5 font-medium text-[var(--brand-base)] transition-colors hover:bg-[var(--green-light)] focus-visible:ring-2 focus-visible:ring-[var(--brand-base)] focus-visible:outline-none"
+                >
+                  <Plus aria-hidden="true" className="size-4 stroke-[1.75]" />
+                  New transaction
+                </button>
+              }
+            />
           </section>
 
           <section className="h-fit overflow-hidden rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)]">

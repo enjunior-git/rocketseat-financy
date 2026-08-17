@@ -1,7 +1,7 @@
 import { Mail } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LabelButton } from "@/components/ui/label-button";
 import { PasswordInput } from "@/components/ui/password-input";
 
 function LoginForm() {
@@ -19,9 +19,9 @@ function LoginForm() {
         Remember me
       </label>
 
-      <LabelButton type="submit" className="mt-1 w-full text-base leading-6">
+      <Button type="submit" size="label" className="mt-1 w-full text-base leading-6">
         Sign in
-      </LabelButton>
+      </Button>
     </form>
   );
 }

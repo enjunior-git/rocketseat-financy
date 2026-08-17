@@ -1,7 +1,7 @@
 import { LogOut, Mail, User } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LabelButton } from "@/components/ui/label-button";
 
 type EditProfileFormProps = {
   email?: string;
@@ -32,18 +32,19 @@ function EditProfileForm({
         disabled
       />
 
-      <LabelButton type="submit" className="mt-3 w-full text-base leading-6">
+      <Button type="submit" size="label" className="mt-3 w-full text-base leading-6">
         Save changes
-      </LabelButton>
+      </Button>
 
-      <LabelButton
+      <Button
         type="button"
         variant="outline"
+        size="label"
         className="w-full text-base leading-6 text-[var(--gray-700)] [&_svg]:text-[var(--red-base)]"
       >
         <LogOut />
         Sign out
-      </LabelButton>
+      </Button>
     </form>
   );
 }

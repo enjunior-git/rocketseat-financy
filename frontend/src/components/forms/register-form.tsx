@@ -1,7 +1,7 @@
 import { Mail, User } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LabelButton } from "@/components/ui/label-button";
 import { PasswordInput } from "@/components/ui/password-input";
 
 function RegisterForm() {
@@ -13,9 +13,9 @@ function RegisterForm() {
 
       <PasswordInput helperText="Password must be at least 8 characters" minLength={8} required />
 
-      <LabelButton type="submit" className="mt-3 w-full text-base leading-6">
+      <Button type="submit" size="label" className="mt-3 w-full text-base leading-6">
         Create account
-      </LabelButton>
+      </Button>
     </form>
   );
 }

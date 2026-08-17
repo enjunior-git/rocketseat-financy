@@ -15,8 +15,9 @@ import {
 } from "lucide-react";
 
 import { Navbar } from "@/components/navigation/navbar";
+import { ActionAlertDialog } from "@/components/ui/action-alert-dialog";
+import { Button } from "@/components/ui/button";
 import { IconButton } from "@/components/ui/icon-button";
-import { LabelButton } from "@/components/ui/label-button";
 import { Tag, type TagProps } from "@/components/ui/tag";
 import { cn } from "@/lib/utils";
 
@@ -124,8 +125,6 @@ const categories: CategoryCard[] = [
   },
 ];
 
-const showTodo = () => alert("TODO");
-
 function CategoriesPage() {
   return (
     <main className="min-h-screen bg-[var(--gray-100)]">
@@ -140,10 +139,14 @@ function CategoriesPage() {
             </p>
           </div>
 
-          <LabelButton type="button" size="sm" className="w-fit" onClick={showTodo}>
-            <Plus />
-            New category
-          </LabelButton>
+          <TodoAlertDialog
+            trigger={
+              <Button type="button" size="label-sm" className="w-fit">
+                <Plus />
+                New category
+              </Button>
+            }
+          />
         </header>
 
         <div className="mt-9 grid gap-6 lg:grid-cols-3">
@@ -198,18 +201,23 @@ function CategoryCard({
         </span>
 
         <div className="flex items-center gap-2">
-          <IconButton
-            type="button"
-            tone="danger"
-            aria-label={`Delete ${title}`}
-            icon={<Trash2 />}
-            onClick={showTodo}
+          <ActionAlertDialog
+            title="Delete category?"
+            description={`This will delete "${title}". Transactions using this category may need to be reassigned.`}
+            actionLabel="Delete"
+            actionVariant="destructive"
+            media={<Trash2 aria-hidden="true" className="text-[var(--red-base)]" />}
+            trigger={
+              <IconButton
+                type="button"
+                tone="danger"
+                aria-label={`Delete ${title}`}
+                icon={<Trash2 />}
+              />
+            }
           />
-          <IconButton
-            type="button"
-            aria-label={`Edit ${title}`}
-            icon={<Pencil />}
-            onClick={showTodo}
+          <TodoAlertDialog
+            trigger={<IconButton type="button" aria-label={`Edit ${title}`} icon={<Pencil />} />}
           />
         </div>
       </header>
@@ -224,6 +232,18 @@ function CategoryCard({
         <span className="text-sm leading-5 text-[var(--gray-600)]">{items}</span>
       </footer>
     </article>
+  );
+}
+
+function TodoAlertDialog({ trigger }: { trigger: React.ReactElement }) {
+  return (
+    <ActionAlertDialog
+      title="Feature coming soon"
+      description="This action is not available yet."
+      actionLabel="OK"
+      media={<Plus aria-hidden="true" className="text-[var(--brand-base)]" />}
+      trigger={trigger}
+    />
   );
 }
 
