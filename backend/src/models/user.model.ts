@@ -1,9 +1,4 @@
-import { Field, GraphQLISODateTime, ID, ObjectType, registerEnumType } from "type-graphql";
-import { Role } from "../../generated/prisma/enums.js";
-
-registerEnumType(Role, {
-  name: "Role",
-});
+import { Field, GraphQLISODateTime, ID, ObjectType } from "type-graphql";
 
 @ObjectType()
 export class UserModel {
@@ -17,9 +12,6 @@ export class UserModel {
   email!: string;
 
   password?: string | null;
-
-  @Field(() => Role)
-  role!: Role;
 
   @Field(() => GraphQLISODateTime)
   createdAt!: Date;

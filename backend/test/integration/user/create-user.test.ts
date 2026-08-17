@@ -1,10 +1,9 @@
 import { expect, it } from "vitest";
-import { Role } from "../../../generated/prisma/enums.js";
 import { UserService } from "../../../src/services/user.service.js";
 import { integrationRunner } from "../../helpers/integration-runner.js";
 
 integrationRunner("UserService.create", (getContext) => {
-  it("persists the user with the default role", async () => {
+  it("persists the user", async () => {
     const service = new UserService(getContext().prisma);
 
     const user = await service.create({
@@ -22,7 +21,6 @@ integrationRunner("UserService.create", (getContext) => {
       id: user.id,
       name: "John Doe",
       email: "john.doe@example.com",
-      role: Role.member,
       password: null,
     });
   });

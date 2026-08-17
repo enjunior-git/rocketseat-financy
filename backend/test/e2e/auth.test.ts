@@ -26,7 +26,6 @@ e2eRunner("Auth GraphQL", (getContext) => {
         id: expect.any(String),
         name: "Jane Doe",
         email: "jane.doe@example.com",
-        role: "member",
       },
     });
 
@@ -83,7 +82,6 @@ const registerMutation = `#graphql
         id
         name
         email
-        role
       }
     }
   }

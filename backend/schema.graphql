@@ -81,13 +81,6 @@ input RegisterRequest {
   password: String!
 }
 
-enum Role {
-  admin
-  member
-  owner
-  viewer
-}
-
 type TransactionModel {
   amount: Float!
   category: CategoryModel
@@ -135,6 +128,5 @@ type UserModel {
   email: String!
   id: ID!
   name: String!
-  role: Role!
   updatedAt: DateTimeISO!
 }
