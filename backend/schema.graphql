@@ -3,6 +3,12 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type AuthResponse {
+  refreshToken: String!
+  token: String!
+  user: UserModel!
+}
+
 type CategoryModel {
   colour: String!
   createdAt: DateTimeISO!
@@ -44,11 +50,18 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTimeISO
 
+input LoginRequest {
+  email: String!
+  password: String!
+}
+
 type Mutation {
   createCategory(data: CreateCategoryRequest!): CategoryModel!
   createTransaction(data: CreateTransactionRequest!): TransactionModel!
   deleteCategory(id: String!): Boolean!
   deleteTransaction(id: String!): Boolean!
+  login(data: LoginRequest!): AuthResponse!
+  register(data: RegisterRequest!): AuthResponse!
   updateCategory(data: UpdateCategoryRequest!, id: String!): CategoryModel!
   updateTransaction(data: UpdateTransactionRequest!, id: String!): TransactionModel!
 }
@@ -60,6 +73,19 @@ type Query {
   listCategories: [CategoryModel!]!
   listTransactions: [TransactionModel!]!
   transactionSummary(month: DateTimeISO): TransactionSummaryModel!
+}
+
+input RegisterRequest {
+  email: String!
+  name: String!
+  password: String!
+}
+
+enum Role {
+  admin
+  member
+  owner
+  viewer
 }
 
 type TransactionModel {
@@ -102,4 +128,13 @@ input UpdateTransactionRequest {
   date: DateTimeISO
   description: String
   type: TransactionType
+}
+
+type UserModel {
+  createdAt: DateTimeISO!
+  email: String!
+  id: ID!
+  name: String!
+  role: Role!
+  updatedAt: DateTimeISO!
 }
