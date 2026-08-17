@@ -1,7 +1,9 @@
+import { useNavigate } from "@tanstack/react-router";
 import { LogOut, Mail, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuthStore } from "@/stores/auth";
 
 type EditProfileFormProps = {
   email?: string;
@@ -12,6 +14,14 @@ function EditProfileForm({
   email = "account@example.com",
   name = "Test Account",
 }: EditProfileFormProps) {
+  const navigate = useNavigate();
+  const logout = useAuthStore((state) => state.logout);
+
+  const handleSignOut = () => {
+    logout();
+    void navigate({ to: "/login" });
+  };
+
   return (
     <form className="flex flex-col gap-5">
       <Input
@@ -40,6 +50,7 @@ function EditProfileForm({
         type="button"
         variant="outline"
         size="label"
+        onClick={handleSignOut}
         className="w-full text-base leading-6 text-[var(--gray-700)] [&_svg]:text-[var(--red-base)]"
       >
         <LogOut />

@@ -52,16 +52,19 @@ function Navbar({ activeItem, items = defaultItems, userInitials = "CT" }: Navba
           ))}
         </nav>
 
-        <Link
-          to="/profile"
-          className="ml-auto rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-base)]"
-        >
-          <Avatar className="bg-[var(--gray-300)] text-[var(--gray-800)]">
-            <AvatarFallback className="bg-[var(--gray-300)] text-xs font-semibold text-[var(--gray-800)]">
-              {userInitials}
-            </AvatarFallback>
-          </Avatar>
-        </Link>
+        <div className="ml-auto flex items-center gap-3">
+          <Link
+            to="/profile"
+            aria-label="Edit profile"
+            className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-base)]"
+          >
+            <Avatar className="bg-[var(--gray-300)] text-[var(--gray-800)]">
+              <AvatarFallback className="bg-[var(--gray-300)] text-xs font-semibold text-[var(--gray-800)]">
+                {userInitials}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
+        </div>
       </div>
     </header>
   );
