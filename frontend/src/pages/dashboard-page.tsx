@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 
 import { TransactionFormDialog } from "@/components/forms/transaction-form-dialog";
-import { Navbar } from "@/components/navigation/navbar";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tag, type TagProps } from "@/components/ui/tag";
@@ -176,10 +175,7 @@ function DashboardPage() {
   const categories = (summaryQuery.data?.categories ?? []).map(toCategorySummary);
 
   return (
-    <main className="min-h-screen bg-[var(--gray-100)]">
-      <Navbar activeItem="Dashboard" />
-
-      <section className="mx-auto grid w-full max-w-[1280px] gap-6 px-6 py-12 sm:px-10">
+    <section className="mx-auto grid w-full max-w-[1280px] gap-6 px-6 py-12 sm:px-10">
         <div className="grid gap-6 lg:grid-cols-3">
           {summaryQuery.isLoading
             ? ["Total balance", "Monthly income", "Monthly expenses"].map((label) => (
@@ -272,8 +268,7 @@ function DashboardPage() {
             </div>
           </Card>
         </div>
-      </section>
-    </main>
+    </section>
   );
 }
 

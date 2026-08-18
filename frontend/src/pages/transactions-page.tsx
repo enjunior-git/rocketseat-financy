@@ -21,7 +21,6 @@ import {
   TransactionFormDialog,
   type TransactionFormValues,
 } from "@/components/forms/transaction-form-dialog";
-import { Navbar } from "@/components/navigation/navbar";
 import { ActionAlertDialog } from "@/components/ui/action-alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -188,10 +187,7 @@ function TransactionsPage() {
   const lastResult = transactions.length;
 
   return (
-    <main className="min-h-screen bg-[var(--gray-100)]">
-      <Navbar activeItem="Transactions" />
-
-      <section className="mx-auto w-full max-w-[1280px] px-6 py-12 sm:px-10">
+    <section className="mx-auto w-full max-w-[1280px] px-6 py-12 sm:px-10">
         <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-[28px] leading-9 font-bold text-[var(--gray-800)]">Transactions</h1>
@@ -278,8 +274,7 @@ function TransactionsPage() {
             </div>
           </footer>
         </Card>
-      </section>
-    </main>
+    </section>
   );
 }
 

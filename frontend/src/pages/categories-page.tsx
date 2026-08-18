@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 
 import { CategoryFormDialog } from "@/components/forms/category-form-dialog";
-import { Navbar } from "@/components/navigation/navbar";
 import { ActionAlertDialog } from "@/components/ui/action-alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -118,10 +117,7 @@ function CategoriesPage() {
   const categoryStats = getCategoryStats(categories);
 
   return (
-    <main className="min-h-screen bg-[var(--gray-100)]">
-      <Navbar activeItem="Categories" />
-
-      <section className="mx-auto w-full max-w-[1280px] px-6 py-12 sm:px-10">
+    <section className="mx-auto w-full max-w-[1280px] px-6 py-12 sm:px-10">
         <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-[28px] leading-9 font-bold text-[var(--gray-800)]">Categories</h1>
@@ -170,8 +166,7 @@ function CategoriesPage() {
             />
           ))}
         </div>
-      </section>
-    </main>
+    </section>
   );
 }
 

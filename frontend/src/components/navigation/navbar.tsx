@@ -1,4 +1,4 @@
-import { Link, type LinkProps } from "@tanstack/react-router";
+import { Link, type LinkProps, useRouterState } from "@tanstack/react-router";
 import Logo from "@/assets/logo.svg";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { cn } from "@/lib/utils";
@@ -32,6 +32,7 @@ const defaultItems: NavbarItem[] = [
 
 function Navbar({ activeItem, items = defaultItems, userFullName }: NavbarProps) {
   const storedUserName = useAuthStore((state) => state.user?.name);
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
   const fullName = userFullName ?? storedUserName ?? "";
 
   return (
@@ -48,7 +49,7 @@ function Navbar({ activeItem, items = defaultItems, userFullName }: NavbarProps)
               to={item.to}
               className={cn(
                 "text-sm leading-5 font-medium text-[var(--gray-600)] transition-colors hover:text-[var(--brand-base)]",
-                activeItem === item.label && "text-[var(--brand-base)]",
+                (activeItem === item.label || pathname === item.to) && "text-[var(--brand-base)]",
               )}
             >
               {item.label}

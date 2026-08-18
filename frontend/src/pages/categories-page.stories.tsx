@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { withAuthenticatedPageLayout } from "./authenticated-page-story-layout";
 import { withPageQueryState } from "./page-story-mocks";
 import { CategoriesPage } from "./categories-page";
 
@@ -9,6 +10,7 @@ const meta = {
   parameters: {
     layout: "fullscreen",
   },
+  decorators: [withAuthenticatedPageLayout],
   tags: ["autodocs"],
 } satisfies Meta<typeof CategoriesPage>;
 

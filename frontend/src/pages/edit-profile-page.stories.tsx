@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+import { withAuthenticatedPageLayout } from "./authenticated-page-story-layout";
 import { EditProfilePage } from "./edit-profile-page";
 
 const meta = {
@@ -8,6 +9,7 @@ const meta = {
   parameters: {
     layout: "fullscreen",
   },
+  decorators: [withAuthenticatedPageLayout],
   tags: ["autodocs"],
   args: {
     email: "account@example.com",
