@@ -1,5 +1,4 @@
-import { useTransactionSummaryQuery } from "@/entities/transaction";
-import { useTransactionsQuery } from "@/entities/transaction";
+import { useTransactionSummaryQuery, useTransactionsQuery } from "@/entities/transaction";
 import {
   getSummaryCards,
   toCategorySummary,

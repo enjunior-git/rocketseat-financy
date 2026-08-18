@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-
+import { TransactionsPage } from "@/pages/transactions-page";
 import { withAuthenticatedPageLayout } from "./authenticated-page-story-layout";
 import { withPageQueryState } from "./page-story-mocks";
-import { TransactionsPage } from "@/pages/transactions-page";
 
 const meta = {
   title: "Pages/Authenticated/Transactions",

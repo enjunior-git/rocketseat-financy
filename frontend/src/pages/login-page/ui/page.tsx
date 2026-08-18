@@ -1,8 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { UserRoundPlus } from "lucide-react";
-
-import Logo from "@/shared/assets/logo.svg";
 import { LoginForm } from "@/features/auth/login";
+import Logo from "@/shared/assets/logo.svg";
 import { buttonVariants } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 

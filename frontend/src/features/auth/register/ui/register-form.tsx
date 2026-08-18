@@ -1,10 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Mail, User } from "lucide-react";
-
+import { useRegisterMutation } from "@/features/auth/register";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { PasswordInput } from "@/shared/ui/password-input";
-import { useRegisterMutation } from "@/features/auth/register";
 
 function RegisterForm() {
   const navigate = useNavigate();

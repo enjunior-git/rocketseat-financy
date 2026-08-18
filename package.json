@@ -11,8 +11,8 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "test:e2e": "pnpm --filter e2e test",
-    "format": "biome format --write .",
-    "format:check": "biome format .",
+    "format": "biome check --write .",
+    "format:check": "biome check .",
     "lint": "biome lint .",
     "check": "biome check ."
   },

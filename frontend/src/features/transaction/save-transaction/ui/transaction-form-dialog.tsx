@@ -1,12 +1,8 @@
 import { CircleArrowDown, CircleArrowUp } from "lucide-react";
 import type * as React from "react";
 import { useId, useState } from "react";
-
-import {
-  getCategoryOptions,
-  getTransactionFormInput,
-  type TransactionFormValues,
-} from "../model/transaction-form";
+import { useCategoriesQuery } from "@/entities/category";
+import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
@@ -19,8 +15,11 @@ import {
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Select } from "@/shared/ui/select";
-import { useCategoriesQuery } from "@/entities/category";
-import { cn } from "@/shared/lib/utils";
+import {
+  getCategoryOptions,
+  getTransactionFormInput,
+  type TransactionFormValues,
+} from "../model/transaction-form";
 import { useCreateTransactionMutation } from "../model/use-create-transaction-mutation";
 import { useUpdateTransactionMutation } from "../model/use-update-transaction-mutation";
 

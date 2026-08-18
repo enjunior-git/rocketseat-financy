@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-
-import { categoriesQueryKey } from "@/entities/category";
-import { transactionSummaryQueryKey } from "@/entities/transaction";
-import { transactionsQueryKey } from "@/entities/transaction";
-import { type UpdateCategoryVariables, updateCategory } from "@/entities/category";
+import {
+  categoriesQueryKey,
+  type UpdateCategoryVariables,
+  updateCategory,
+} from "@/entities/category";
+import { transactionSummaryQueryKey, transactionsQueryKey } from "@/entities/transaction";
 
 const useUpdateCategoryMutation = () => {
   const queryClient = useQueryClient();

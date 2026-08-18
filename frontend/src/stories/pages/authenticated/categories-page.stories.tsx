@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-
+import { CategoriesPage } from "@/pages/categories-page";
 import { withAuthenticatedPageLayout } from "./authenticated-page-story-layout";
 import { withPageQueryState } from "./page-story-mocks";
-import { CategoriesPage } from "@/pages/categories-page";
 
 const meta = {
   title: "Pages/Authenticated/Categories",

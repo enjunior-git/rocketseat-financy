@@ -1,7 +1,7 @@
+import type { CategoryStat } from "@/entities/category";
 import { cn } from "@/shared/lib/utils";
 import { Card } from "@/shared/ui/card";
 import { Skeleton } from "@/shared/ui/skeleton";
-import type { CategoryStat } from "@/entities/category";
 
 function CategoryStatCard({ helper, icon: Icon, iconClassName, value }: CategoryStat) {
   return (

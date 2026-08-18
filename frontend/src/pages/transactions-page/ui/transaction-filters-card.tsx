@@ -2,8 +2,8 @@ import { Search } from "lucide-react";
 
 import { Card } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
-import { Select } from "@/shared/ui/select";
 import type { SelectOption } from "@/shared/ui/select";
+import { Select } from "@/shared/ui/select";
 
 type TransactionFiltersCardProps = {
   categoryFilter: string;

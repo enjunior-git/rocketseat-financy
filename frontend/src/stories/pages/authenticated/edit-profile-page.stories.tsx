@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-
-import { withAuthenticatedPageLayout } from "./authenticated-page-story-layout";
 import { EditProfilePage } from "@/pages/edit-profile-page";
+import { withAuthenticatedPageLayout } from "./authenticated-page-story-layout";
 
 const meta = {
   title: "Pages/Authenticated/Edit Profile",

@@ -1,7 +1,6 @@
 import { useId } from "react";
-
-import { Label } from "@/shared/ui/label";
 import { cn } from "@/shared/lib/utils";
+import { Label } from "@/shared/ui/label";
 
 type InputProps = Omit<React.ComponentProps<"input">, "prefix"> & {
   label?: string;

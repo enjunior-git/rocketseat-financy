@@ -1,5 +1,5 @@
-import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { cn } from "@/shared/lib/utils";
+import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 
 export type UserAvatarProps = {
   className?: string;

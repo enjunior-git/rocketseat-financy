@@ -1,9 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { categoriesQueryKey } from "@/entities/category";
-import { transactionSummaryQueryKey } from "@/entities/transaction";
-import { transactionsQueryKey } from "@/entities/transaction";
-import { deleteTransaction } from "@/entities/transaction";
+import {
+  deleteTransaction,
+  transactionSummaryQueryKey,
+  transactionsQueryKey,
+} from "@/entities/transaction";
 
 const useDeleteTransactionMutation = () => {
   const queryClient = useQueryClient();

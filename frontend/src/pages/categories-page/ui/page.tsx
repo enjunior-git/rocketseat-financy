@@ -1,7 +1,5 @@
 import { Plus } from "lucide-react";
-
-import { getCategoryStats } from "@/entities/category";
-import { useCategoriesQuery } from "@/entities/category";
+import { getCategoryStats, useCategoriesQuery } from "@/entities/category";
 import { useDeleteCategoryMutation } from "@/features/category/delete-category";
 import { CategoryFormDialog } from "@/features/category/save-category";
 import { Button } from "@/shared/ui/button";

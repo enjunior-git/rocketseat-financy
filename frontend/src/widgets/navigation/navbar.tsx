@@ -1,8 +1,8 @@
 import { Link, type LinkProps, useRouterState } from "@tanstack/react-router";
-import Logo from "@/shared/assets/logo.svg";
-import { UserAvatar } from "@/shared/ui/user-avatar";
-import { cn } from "@/shared/lib/utils";
 import { useAuthStore } from "@/entities/session";
+import Logo from "@/shared/assets/logo.svg";
+import { cn } from "@/shared/lib/utils";
+import { UserAvatar } from "@/shared/ui/user-avatar";
 
 type NavbarItem = {
   to: LinkProps["to"];

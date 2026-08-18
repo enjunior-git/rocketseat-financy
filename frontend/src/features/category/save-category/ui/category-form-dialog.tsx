@@ -2,7 +2,7 @@ import type * as React from "react";
 import { useState } from "react";
 
 import { categoryColors, categoryIcons } from "@/entities/category";
-import { getCategoryFormInput, type CategoryFormValues } from "../model/category-form";
+import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,
@@ -14,7 +14,7 @@ import {
 } from "@/shared/ui/dialog";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
-import { cn } from "@/shared/lib/utils";
+import { type CategoryFormValues, getCategoryFormInput } from "../model/category-form";
 import { useCreateCategoryMutation } from "../model/use-create-category-mutation";
 import { useUpdateCategoryMutation } from "../model/use-update-category-mutation";
 

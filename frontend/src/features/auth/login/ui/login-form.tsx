@@ -1,11 +1,10 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Mail } from "lucide-react";
-
+import { useLoginMutation } from "@/features/auth/login";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { PasswordInput } from "@/shared/ui/password-input";
-import { useLoginMutation } from "@/features/auth/login";
 
 function LoginForm() {
   const navigate = useNavigate();

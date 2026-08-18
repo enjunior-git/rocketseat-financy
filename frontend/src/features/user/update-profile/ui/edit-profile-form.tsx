@@ -1,10 +1,9 @@
 import { useNavigate } from "@tanstack/react-router";
 import { LogOut, Mail, User } from "lucide-react";
 import { type FormEvent, useEffect, useState } from "react";
-
+import { useAuthStore } from "@/entities/session";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
-import { useAuthStore } from "@/entities/session";
 
 type EditProfileFormProps = {
   email?: string;

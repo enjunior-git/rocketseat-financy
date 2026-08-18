@@ -4,8 +4,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
 import "./index.css";
-import { queryClient } from "./shared/lib/query-client";
 import { router } from "./router";
+import { queryClient } from "./shared/lib/query-client";
 
 const root = document.getElementById("root");
 

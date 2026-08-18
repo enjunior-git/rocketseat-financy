@@ -3,11 +3,10 @@ import type { DocumentNode } from "graphql";
 import { useRef } from "react";
 
 import { categoriesQueryKey } from "@/entities/category";
-import { transactionSummaryQueryKey } from "@/entities/transaction";
-import { transactionsQueryKey } from "@/entities/transaction";
+import { transactionSummaryQueryKey, transactionsQueryKey } from "@/entities/transaction";
 import { apolloClient } from "@/shared/api/apollo";
-import { queryClient } from "@/shared/lib/query-client";
 import type { Category, Transaction, TransactionSummary } from "@/shared/api/types";
+import { queryClient } from "@/shared/lib/query-client";
 
 type PageQueryState = "default" | "error" | "loading";
 
