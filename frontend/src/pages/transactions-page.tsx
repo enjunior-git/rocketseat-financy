@@ -8,14 +8,19 @@ import {
   Search,
   Trash2,
 } from "lucide-react";
-
-import { categoryIconToneByColor, getCategoryColor, getCategoryIcon } from "@/entities/category";
-import { useCategoriesQuery } from "@/entities/category";
-import { formatDate, formatSignedCurrency } from "@/entities/transaction";
-import { useTransactionsQuery } from "@/entities/transaction";
+import { useMemo, useState } from "react";
+import {
+  categoryIconToneByColor,
+  getCategoryColor,
+  getCategoryIcon,
+  useCategoriesQuery,
+} from "@/entities/category";
+import { formatDate, formatSignedCurrency, useTransactionsQuery } from "@/entities/transaction";
 import { useDeleteTransactionMutation } from "@/features/transaction/delete-transaction";
-import { toTransactionFormValues } from "@/features/transaction/save-transaction";
-import { TransactionFormDialog } from "@/features/transaction/save-transaction";
+import {
+  TransactionFormDialog,
+  toTransactionFormValues,
+} from "@/features/transaction/save-transaction";
 import type { Category, Transaction } from "@/shared/api/types";
 import { cn } from "@/shared/lib/utils";
 import { ActionAlertDialog } from "@/shared/ui/action-alert-dialog";
@@ -44,13 +49,8 @@ type TransactionRow = {
 const filterOptions = {
   type: [
     { label: "All", value: "all" },
-    { label: "Income", value: "income" },
-    { label: "Expense", value: "expense" },
-  ],
-  period: [
-    { label: "November / 2025", value: "2025-11" },
-    { label: "December / 2025", value: "2025-12" },
-    { label: "October / 2025", value: "2025-10" },
+    { label: "Income", value: "income", disabled: true },
+    { label: "Expense", value: "expense", disabled: true },
   ],
 } satisfies Record<string, SelectOption[]>;
 
@@ -82,14 +82,98 @@ function getCategoryFilterOptions(categories: Category[]): SelectOption[] {
   ];
 }
 
+function getTypeFilterOptions(transactions: Transaction[]): SelectOption[] {
+  const availableTypes = new Set(transactions.map((transaction) => transaction.type));
+
+  return filterOptions.type.map((option) => ({
+    ...option,
+    disabled: option.value !== "all" && !availableTypes.has(option.value as Transaction["type"]),
+  }));
+}
+
+function getPeriodValue(date: string): string | null {
+  const parsedDate = new Date(date);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return null;
+  }
+
+  const year = parsedDate.getUTCFullYear();
+  const month = String(parsedDate.getUTCMonth() + 1).padStart(2, "0");
+
+  return `${year}-${month}`;
+}
+
+function getPeriodLabel(period: string): string {
+  const [year, month] = period.split("-");
+  const date = new Date(Date.UTC(Number(year), Number(month) - 1, 1));
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "long",
+    timeZone: "UTC",
+    year: "numeric",
+  }).format(date);
+}
+
+function getPeriodFilterOptions(transactions: Transaction[]): SelectOption[] {
+  const periods = new Set<string>();
+
+  for (const transaction of transactions) {
+    const period = getPeriodValue(transaction.date);
+
+    if (period) {
+      periods.add(period);
+    }
+  }
+
+  return [
+    { label: "All", value: "all" },
+    ...Array.from(periods)
+      .sort((firstPeriod, secondPeriod) => secondPeriod.localeCompare(firstPeriod))
+      .map((period) => ({
+        label: getPeriodLabel(period),
+        value: period,
+      })),
+  ];
+}
+
 function TransactionsPage() {
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [periodFilter, setPeriodFilter] = useState("all");
   const transactionsQuery = useTransactionsQuery();
   const categoriesQuery = useCategoriesQuery();
   const deleteTransactionMutation = useDeleteTransactionMutation();
   const transactions = transactionsQuery.data ?? [];
   const categoryFilterOptions = getCategoryFilterOptions(categoriesQuery.data ?? []);
-  const firstResult = transactions.length > 0 ? 1 : 0;
-  const lastResult = transactions.length;
+  const typeFilterOptions = getTypeFilterOptions(transactions);
+  const periodFilterOptions = getPeriodFilterOptions(transactions);
+  const filteredTransactions = useMemo(() => {
+    const normalizedSearch = search.trim().toLowerCase();
+
+    return transactions.filter((transaction) => {
+      if (normalizedSearch && !transaction.description.toLowerCase().includes(normalizedSearch)) {
+        return false;
+      }
+
+      if (typeFilter !== "all" && transaction.type !== typeFilter) {
+        return false;
+      }
+
+      if (categoryFilter !== "all" && transaction.categoryId !== categoryFilter) {
+        return false;
+      }
+
+      if (periodFilter !== "all" && getPeriodValue(transaction.date) !== periodFilter) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [categoryFilter, periodFilter, search, transactions, typeFilter]);
+  const firstResult = filteredTransactions.length > 0 ? 1 : 0;
+  const lastResult = filteredTransactions.length;
 
   return (
     <section className="mx-auto w-full max-w-[1280px] px-6 py-12 sm:px-10">
@@ -119,10 +203,30 @@ function TransactionsPage() {
             type="search"
             placeholder="Search by description"
             icon={<Search />}
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
           />
-          <Select label="Type" defaultValue="all" options={filterOptions.type} />
-          <Select label="Category" defaultValue="all" options={categoryFilterOptions} />
-          <Select label="Period" defaultValue="2025-11" options={filterOptions.period} />
+          <Select
+            label="Type"
+            value={typeFilter}
+            onValueChange={(value) => setTypeFilter(value ?? "all")}
+            options={typeFilterOptions}
+            disabled={transactionsQuery.isLoading}
+          />
+          <Select
+            label="Category"
+            value={categoryFilter}
+            onValueChange={(value) => setCategoryFilter(value ?? "all")}
+            options={categoryFilterOptions}
+            disabled={categoriesQuery.isLoading}
+          />
+          <Select
+            label="Period"
+            value={periodFilter}
+            onValueChange={(value) => setPeriodFilter(value ?? "all")}
+            options={periodFilterOptions}
+            disabled={transactionsQuery.isLoading}
+          />
         </div>
       </Card>
 
@@ -143,7 +247,7 @@ function TransactionsPage() {
               {transactionsQuery.isLoading ? (
                 <TransactionTableSkeletonRows />
               ) : (
-                transactions
+                filteredTransactions
                   .map(toTransactionRow)
                   .map((transaction) => (
                     <TransactionTableRow
@@ -165,9 +269,16 @@ function TransactionsPage() {
           <TransactionStatus message="No transactions yet." />
         ) : null}
 
+        {!transactionsQuery.isLoading &&
+        !transactionsQuery.isError &&
+        transactions.length > 0 &&
+        filteredTransactions.length === 0 ? (
+          <TransactionStatus message="No transactions match these filters." />
+        ) : null}
+
         <footer className="flex flex-col gap-4 border-t border-[var(--gray-200)] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm leading-5 text-[var(--gray-700)]">
-            {firstResult} to {lastResult} | {transactions.length} results
+            {firstResult} to {lastResult} | {filteredTransactions.length} results
           </p>
 
           <div className="flex items-center gap-2">
