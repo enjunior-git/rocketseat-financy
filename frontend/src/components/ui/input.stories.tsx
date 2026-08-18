@@ -4,7 +4,7 @@ import { Mail } from "lucide-react";
 import { Input } from "./input";
 
 const meta = {
-  title: "UI/Input",
+  title: "UI/Inputs/Text",
   component: Input,
   parameters: {
     layout: "centered",

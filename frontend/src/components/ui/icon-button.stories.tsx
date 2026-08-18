@@ -4,7 +4,7 @@ import { Trash2, UserRoundPlus } from "lucide-react";
 import { IconButton } from "./icon-button";
 
 const meta = {
-  title: "UI/IconButton",
+  title: "UI/Buttons/Icon",
   component: IconButton,
   parameters: {
     layout: "centered",

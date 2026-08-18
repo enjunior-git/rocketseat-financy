@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { PaginationButton } from "./pagination-button";
 
 const meta = {
-  title: "UI/PaginationButton",
+  title: "UI/Buttons/Pagination",
   component: PaginationButton,
   parameters: {
     layout: "centered",

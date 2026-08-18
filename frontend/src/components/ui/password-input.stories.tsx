@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { PasswordInput } from "./password-input";
 
 const meta = {
-  title: "UI/PasswordInput",
+  title: "UI/Inputs/Password",
   component: PasswordInput,
   parameters: {
     layout: "centered",

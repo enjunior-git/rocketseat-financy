@@ -4,7 +4,7 @@ import { UserRoundPlus } from "lucide-react";
 import { Button } from "./button";
 
 const meta = {
-  title: "UI/Button/Label",
+  title: "UI/Buttons/Label",
   component: Button,
   parameters: {
     layout: "centered",

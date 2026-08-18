@@ -10,7 +10,7 @@ const options = [
 ];
 
 const meta = {
-  title: "UI/Select",
+  title: "UI/Inputs/Select",
   component: Select,
   parameters: {
     layout: "centered",
