@@ -1,11 +1,5 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
-import {
-  ChevronRight,
-  CircleArrowDown,
-  CircleArrowUp,
-  Plus,
-  WalletCards,
-} from "lucide-react";
+import { ChevronRight, CircleArrowDown, CircleArrowUp, Plus, WalletCards } from "lucide-react";
 
 import {
   categoryIconToneByColor,
@@ -13,15 +7,15 @@ import {
   getCategoryColor,
   getCategoryIcon,
 } from "@/entities/category";
-import {
-  formatCurrency,
-  formatDate,
-  formatSignedCurrency,
-} from "@/entities/transaction";
+import { formatCurrency, formatDate, formatSignedCurrency } from "@/entities/transaction";
 import { useTransactionSummaryQuery } from "@/entities/transaction";
 import { useTransactionsQuery } from "@/entities/transaction";
 import { TransactionFormDialog } from "@/features/transaction/save-transaction";
-import type { CategoryTransactionSummary, Transaction, TransactionSummary } from "@/shared/api/types";
+import type {
+  CategoryTransactionSummary,
+  Transaction,
+  TransactionSummary,
+} from "@/shared/api/types";
 import { cn } from "@/shared/lib/utils";
 import { Card } from "@/shared/ui/card";
 import { Skeleton } from "@/shared/ui/skeleton";

@@ -20,11 +20,7 @@
   },
   "customizations": {
     "vscode": {
-      "extensions": [
-        "biomejs.biome",
-        "Prisma.prisma",
-        "ms-playwright.playwright"
-      ]
+      "extensions": ["biomejs.biome", "Prisma.prisma", "ms-playwright.playwright"]
     }
   }
 }

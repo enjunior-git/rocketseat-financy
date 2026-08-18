@@ -2,10 +2,7 @@ import type * as React from "react";
 import { useState } from "react";
 
 import { categoryColors, categoryIcons } from "@/entities/category";
-import {
-  getCategoryFormInput,
-  type CategoryFormValues,
-} from "../model/category-form";
+import { getCategoryFormInput, type CategoryFormValues } from "../model/category-form";
 import { Button } from "@/shared/ui/button";
 import {
   Dialog,

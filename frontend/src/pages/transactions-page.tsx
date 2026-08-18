@@ -9,16 +9,9 @@ import {
   Trash2,
 } from "lucide-react";
 
-import {
-  categoryIconToneByColor,
-  getCategoryColor,
-  getCategoryIcon,
-} from "@/entities/category";
+import { categoryIconToneByColor, getCategoryColor, getCategoryIcon } from "@/entities/category";
 import { useCategoriesQuery } from "@/entities/category";
-import {
-  formatDate,
-  formatSignedCurrency,
-} from "@/entities/transaction";
+import { formatDate, formatSignedCurrency } from "@/entities/transaction";
 import { useTransactionsQuery } from "@/entities/transaction";
 import { useDeleteTransactionMutation } from "@/features/transaction/delete-transaction";
 import { toTransactionFormValues } from "@/features/transaction/save-transaction";
