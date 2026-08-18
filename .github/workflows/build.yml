@@ -1,0 +1,66 @@
+name: Build
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Apps, Storybook, Images
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    env:
+      JWT_SECRET: ci-secret
+      DATABASE_URL: file:/tmp/financy-ci.db
+      CORS_ORIGIN: http://127.0.0.1:5173
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @rocketseat-financy/backend prisma:generate
+
+      - name: Build apps
+        run: pnpm build
+
+      - name: Build Storybook
+        run: pnpm --filter frontend build-storybook
+
+      - name: Build backend image
+        run: docker build --file backend/Dockerfile --target runtime --tag financy-backend:ci .
+
+      - name: Build frontend image
+        run: docker build --file frontend/Dockerfile --target runtime --tag financy-frontend:ci .
+
+      - name: Upload frontend build
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+          if-no-files-found: ignore
+
+      - name: Upload Storybook build
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-static
+          path: frontend/storybook-static
+          if-no-files-found: ignore

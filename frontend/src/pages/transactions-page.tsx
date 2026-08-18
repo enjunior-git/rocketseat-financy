@@ -188,92 +188,92 @@ function TransactionsPage() {
 
   return (
     <section className="mx-auto w-full max-w-[1280px] px-6 py-12 sm:px-10">
-        <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-[28px] leading-9 font-bold text-[var(--gray-800)]">Transactions</h1>
-            <p className="mt-1 text-base leading-6 text-[var(--gray-600)]">
-              Manage all your financial transactions
-            </p>
-          </div>
+      <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-[28px] leading-9 font-bold text-[var(--gray-800)]">Transactions</h1>
+          <p className="mt-1 text-base leading-6 text-[var(--gray-600)]">
+            Manage all your financial transactions
+          </p>
+        </div>
 
-          <TransactionFormDialog
-            mode="create"
-            trigger={
-              <Button type="button" size="label-sm" className="w-fit">
-                <Plus />
-                New transaction
-              </Button>
-            }
+        <TransactionFormDialog
+          mode="create"
+          trigger={
+            <Button type="button" size="label-sm" className="w-fit">
+              <Plus />
+              New transaction
+            </Button>
+          }
+        />
+      </header>
+
+      <Card className="mt-9 gap-0 overflow-visible rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-6 ring-0">
+        <div className="grid gap-4 lg:grid-cols-4">
+          <Input
+            label="Search"
+            type="search"
+            placeholder="Search by description"
+            icon={<Search />}
           />
-        </header>
+          <Select label="Type" defaultValue="all" options={filterOptions.type} />
+          <Select label="Category" defaultValue="all" options={categoryFilterOptions} />
+          <Select label="Period" defaultValue="2025-11" options={filterOptions.period} />
+        </div>
+      </Card>
 
-        <Card className="mt-9 gap-0 overflow-visible rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-6 ring-0">
-          <div className="grid gap-4 lg:grid-cols-4">
-            <Input
-              label="Search"
-              type="search"
-              placeholder="Search by description"
-              icon={<Search />}
-            />
-            <Select label="Type" defaultValue="all" options={filterOptions.type} />
-            <Select label="Category" defaultValue="all" options={categoryFilterOptions} />
-            <Select label="Period" defaultValue="2025-11" options={filterOptions.period} />
-          </div>
-        </Card>
-
-        <Card className="mt-9 gap-0 overflow-hidden rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] py-0 ring-0">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[920px] table-fixed">
-              <thead>
-                <tr className="h-14 border-b border-[var(--gray-200)] text-left">
-                  <TableHead className="w-[34%]">Description</TableHead>
-                  <TableHead className="w-[12%] text-center">Date</TableHead>
-                  <TableHead className="w-[16%] text-center">Category</TableHead>
-                  <TableHead className="w-[14%] text-center">Type</TableHead>
-                  <TableHead className="w-[13%] text-right">Amount</TableHead>
-                  <TableHead className="w-[11%] text-right">Actions</TableHead>
-                </tr>
-              </thead>
-              <tbody>
-                {transactionsQuery.isLoading ? (
-                  <TransactionTableSkeletonRows />
-                ) : (
-                  transactions.map(toTransactionRow).map((transaction) => (
+      <Card className="mt-9 gap-0 overflow-hidden rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] py-0 ring-0">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[920px] table-fixed">
+            <thead>
+              <tr className="h-14 border-b border-[var(--gray-200)] text-left">
+                <TableHead className="w-[34%]">Description</TableHead>
+                <TableHead className="w-[12%] text-center">Date</TableHead>
+                <TableHead className="w-[16%] text-center">Category</TableHead>
+                <TableHead className="w-[14%] text-center">Type</TableHead>
+                <TableHead className="w-[13%] text-right">Amount</TableHead>
+                <TableHead className="w-[11%] text-right">Actions</TableHead>
+              </tr>
+            </thead>
+            <tbody>
+              {transactionsQuery.isLoading ? (
+                <TransactionTableSkeletonRows />
+              ) : (
+                transactions
+                  .map(toTransactionRow)
+                  .map((transaction) => (
                     <TransactionTableRow
                       key={`${transaction.description}-${transaction.date}`}
                       onDelete={() => deleteTransactionMutation.mutate(transaction.id)}
                       {...transaction}
                     />
                   ))
-                )}
-              </tbody>
-            </table>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {transactionsQuery.isError ? (
+          <TransactionStatus message={transactionsQuery.error.message} />
+        ) : null}
+
+        {!transactionsQuery.isLoading && !transactionsQuery.isError && transactions.length === 0 ? (
+          <TransactionStatus message="No transactions yet." />
+        ) : null}
+
+        <footer className="flex flex-col gap-4 border-t border-[var(--gray-200)] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm leading-5 text-[var(--gray-700)]">
+            {firstResult} to {lastResult} | {transactions.length} results
+          </p>
+
+          <div className="flex items-center gap-2">
+            <IconButton type="button" aria-label="Previous page" icon={<ChevronLeft />} />
+            <PaginationButton page={1} current />
+            <PaginationButton page={2} />
+            <PaginationButton page={3} />
+            <IconButton type="button" aria-label="Next page" icon={<ChevronRight />} />
           </div>
-
-          {transactionsQuery.isError ? (
-            <TransactionStatus message={transactionsQuery.error.message} />
-          ) : null}
-
-          {!transactionsQuery.isLoading &&
-          !transactionsQuery.isError &&
-          transactions.length === 0 ? (
-            <TransactionStatus message="No transactions yet." />
-          ) : null}
-
-          <footer className="flex flex-col gap-4 border-t border-[var(--gray-200)] px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm leading-5 text-[var(--gray-700)]">
-              {firstResult} to {lastResult} | {transactions.length} results
-            </p>
-
-            <div className="flex items-center gap-2">
-              <IconButton type="button" aria-label="Previous page" icon={<ChevronLeft />} />
-              <PaginationButton page={1} current />
-              <PaginationButton page={2} />
-              <PaginationButton page={3} />
-              <IconButton type="button" aria-label="Next page" icon={<ChevronRight />} />
-            </div>
-          </footer>
-        </Card>
+        </footer>
+      </Card>
     </section>
   );
 }

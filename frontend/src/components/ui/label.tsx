@@ -1,9 +1,10 @@
-import * as React from "react";
+import type * as React from "react";
 
 import { cn } from "@/lib/utils";
 
 function Label({ className, ...props }: React.ComponentProps<"label">) {
   return (
+    // biome-ignore lint/a11y/noLabelWithoutControl: This primitive forwards label props and can wrap controls at call sites.
     <label
       data-slot="label"
       className={cn(

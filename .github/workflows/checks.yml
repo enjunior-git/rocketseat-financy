@@ -1,0 +1,51 @@
+name: Checks
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Type, Format, Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      JWT_SECRET: ci-secret
+      DATABASE_URL: file:/tmp/financy-ci.db
+      CORS_ORIGIN: http://127.0.0.1:5173
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @rocketseat-financy/backend prisma:generate
+
+      - name: Check types
+        run: |
+          pnpm --filter @rocketseat-financy/backend check
+          pnpm --filter frontend exec tsc -b --pretty false
+
+      - name: Check formatting
+        run: pnpm format:check
+
+      - name: Lint
+        run: pnpm lint

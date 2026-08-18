@@ -1,0 +1,74 @@
+name: Tests
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Backend and E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    env:
+      CI: true
+      JWT_SECRET: ci-secret
+      DATABASE_URL: file:/tmp/financy-ci.db
+      CORS_ORIGIN: http://127.0.0.1:5173
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @rocketseat-financy/backend prisma:generate
+
+      - name: Run backend tests
+        run: |
+          mkdir -p reports/backend
+          pnpm --filter @rocketseat-financy/backend test:integration --reporter=default --reporter=junit --outputFile.junit=../reports/backend/junit.xml
+
+      - name: Install Playwright browser
+        run: pnpm --filter e2e exec playwright install --with-deps chromium
+
+      - name: Run e2e tests
+        run: pnpm test:e2e
+
+      - name: Upload backend test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-report
+          path: reports/backend
+          if-no-files-found: ignore
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: e2e/playwright-report
+          if-no-files-found: ignore
+
+      - name: Upload Playwright test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: e2e/test-results
+          if-no-files-found: ignore

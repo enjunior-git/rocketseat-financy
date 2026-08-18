@@ -176,98 +176,90 @@ function DashboardPage() {
 
   return (
     <section className="mx-auto grid w-full max-w-[1280px] gap-6 px-6 py-12 sm:px-10">
-        <div className="grid gap-6 lg:grid-cols-3">
-          {summaryQuery.isLoading
-            ? ["Total balance", "Monthly income", "Monthly expenses"].map((label) => (
-                <SummaryCardSkeleton key={label} />
-              ))
-            : summaryCards.map((card) => <SummaryCard key={card.label} {...card} />)}
-        </div>
+      <div className="grid gap-6 lg:grid-cols-3">
+        {summaryQuery.isLoading
+          ? ["Total balance", "Monthly income", "Monthly expenses"].map((label) => (
+              <SummaryCardSkeleton key={label} />
+            ))
+          : summaryCards.map((card) => <SummaryCard key={card.label} {...card} />)}
+      </div>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
-          <Card className="gap-0 overflow-hidden rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] py-0 ring-0">
-            <DashboardSectionHeader
-              title="Recent transactions"
-              actionTo="/transactions"
-              actionLabel="View all"
-            />
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
+        <Card className="gap-0 overflow-hidden rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] py-0 ring-0">
+          <DashboardSectionHeader
+            title="Recent transactions"
+            actionTo="/transactions"
+            actionLabel="View all"
+          />
 
-            <div>
-              {transactionsQuery.isLoading ? (
-                <RecentTransactionsSkeleton />
-              ) : null}
+          <div>
+            {transactionsQuery.isLoading ? <RecentTransactionsSkeleton /> : null}
 
-              {transactionsQuery.isError ? (
-                <DashboardStatus message={transactionsQuery.error.message} />
-              ) : null}
+            {transactionsQuery.isError ? (
+              <DashboardStatus message={transactionsQuery.error.message} />
+            ) : null}
 
-              {!transactionsQuery.isLoading &&
-              !transactionsQuery.isError &&
-              recentTransactions.length === 0 ? (
-                <DashboardStatus message="No transactions yet." />
-              ) : null}
+            {!transactionsQuery.isLoading &&
+            !transactionsQuery.isError &&
+            recentTransactions.length === 0 ? (
+              <DashboardStatus message="No transactions yet." />
+            ) : null}
 
-              {recentTransactions.map((transaction) => (
-                <TransactionRow
-                  key={`${transaction.description}-${transaction.date}`}
-                  {...transaction}
-                />
-              ))}
-            </div>
+            {recentTransactions.map((transaction) => (
+              <TransactionRow
+                key={`${transaction.description}-${transaction.date}`}
+                {...transaction}
+              />
+            ))}
+          </div>
 
-            <TransactionFormDialog
-              mode="create"
-              trigger={
-                <button
-                  type="button"
-                  className="flex h-16 w-full items-center justify-center gap-2 border-t border-[var(--gray-200)] text-sm leading-5 font-medium text-[var(--brand-base)] transition-colors hover:bg-[var(--green-light)] focus-visible:ring-2 focus-visible:ring-[var(--brand-base)] focus-visible:outline-none"
-                >
-                  <Plus aria-hidden="true" className="size-4 stroke-[1.75]" />
-                  New transaction
-                </button>
-              }
-            />
-          </Card>
+          <TransactionFormDialog
+            mode="create"
+            trigger={
+              <button
+                type="button"
+                className="flex h-16 w-full items-center justify-center gap-2 border-t border-[var(--gray-200)] text-sm leading-5 font-medium text-[var(--brand-base)] transition-colors hover:bg-[var(--green-light)] focus-visible:ring-2 focus-visible:ring-[var(--brand-base)] focus-visible:outline-none"
+              >
+                <Plus aria-hidden="true" className="size-4 stroke-[1.75]" />
+                New transaction
+              </button>
+            }
+          />
+        </Card>
 
-          <Card className="h-fit gap-0 overflow-hidden rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] py-0 ring-0">
-            <DashboardSectionHeader
-              title="Categories"
-              actionTo="/categories"
-              actionLabel="Manage"
-            />
+        <Card className="h-fit gap-0 overflow-hidden rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] py-0 ring-0">
+          <DashboardSectionHeader title="Categories" actionTo="/categories" actionLabel="Manage" />
 
-            <div className="flex flex-col gap-4 px-6 py-6">
-              {summaryQuery.isLoading ? (
-                <DashboardCategoriesSkeleton />
-              ) : null}
+          <div className="flex flex-col gap-4 px-6 py-6">
+            {summaryQuery.isLoading ? <DashboardCategoriesSkeleton /> : null}
 
-              {summaryQuery.isError ? (
-                <p className="text-sm leading-5 text-[var(--gray-600)]">
-                  {summaryQuery.error.message}
-                </p>
-              ) : null}
+            {summaryQuery.isError ? (
+              <p className="text-sm leading-5 text-[var(--gray-600)]">
+                {summaryQuery.error.message}
+              </p>
+            ) : null}
 
-              {!summaryQuery.isLoading && !summaryQuery.isError && categories.length === 0 ? (
-                <p className="text-sm leading-5 text-[var(--gray-600)]">No categories yet.</p>
-              ) : null}
+            {!summaryQuery.isLoading && !summaryQuery.isError && categories.length === 0 ? (
+              <p className="text-sm leading-5 text-[var(--gray-600)]">No categories yet.</p>
+            ) : null}
 
-              {categories.map((category) => (
-                <div
-                  key={category.title}
-                  className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-5"
-                >
-                  <Tag variant={category.variant} className="justify-self-start">
-                    {category.title}
-                  </Tag>
-                  <span className="text-sm leading-5 text-[var(--gray-600)]">{category.items}</span>
-                  <strong className="text-sm leading-5 font-bold text-[var(--gray-800)]">
-                    {category.amount}
-                  </strong>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
+            {categories.map((category) => (
+              <div
+                key={category.title}
+                className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-5"
+              >
+                <Tag variant={category.variant} className="justify-self-start">
+                  {category.title}
+                </Tag>
+                <span className="text-sm leading-5 text-[var(--gray-600)]">{category.items}</span>
+                <strong className="text-sm leading-5 font-bold text-[var(--gray-800)]">
+                  {category.amount}
+                </strong>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
     </section>
   );
 }
@@ -418,10 +410,7 @@ function DashboardCategoriesSkeleton() {
   return (
     <>
       {[0, 1, 2, 3].map((item) => (
-        <div
-          key={item}
-          className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-5"
-        >
+        <div key={item} className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-5">
           <Skeleton className="h-7 w-24" />
           <Skeleton className="h-5 w-14" />
           <Skeleton className="h-5 w-20" />
