@@ -1,114 +1,24 @@
+import { Pencil, Plus, Trash2 } from "lucide-react";
+
 import {
-  ArrowUpDown,
-  BriefcaseBusiness,
-  Clapperboard,
-  Fuel,
-  Gift,
-  HeartPulse,
-  Library,
-  Pencil,
-  Plus,
-  ShoppingCart,
-  TagIcon,
-  Trash2,
-  TrendingUp,
-  Utensils,
-  WalletCards,
-} from "lucide-react";
-
-import { CategoryFormDialog } from "@/components/forms/category-form-dialog";
-import { ActionAlertDialog } from "@/components/ui/action-alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { IconButton } from "@/components/ui/icon-button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tag, type TagProps } from "@/components/ui/tag";
-import { useCategoriesQuery } from "@/hooks/use-categories-query";
-import { useDeleteCategoryMutation } from "@/hooks/use-delete-category-mutation";
-import { cn } from "@/lib/utils";
-import type { Category } from "@/types";
-
-type CategoryStat = {
-  helper: string;
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  iconClassName: string;
-  value: string;
-};
-
-const categoryIconByValue: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
-  education: Library,
-  entertainment: Clapperboard,
-  fitness: HeartPulse,
-  food: Utensils,
-  gifts: Gift,
-  health: HeartPulse,
-  home: Gift,
-  income: WalletCards,
-  pets: ShoppingCart,
-  savings: TrendingUp,
-  shopping: ShoppingCart,
-  transport: Fuel,
-  utilities: Gift,
-  work: BriefcaseBusiness,
-};
-
-const categoryIconToneByColor = {
-  blue: "bg-[var(--blue-light)] text-[var(--blue-base)]",
-  gray: "bg-[var(--gray-200)] text-[var(--gray-700)]",
-  green: "bg-[var(--green-light)] text-[var(--green-base)]",
-  orange: "bg-[var(--orange-light)] text-[var(--orange-base)]",
-  pink: "bg-[var(--pink-light)] text-[var(--pink-base)]",
-  purple: "bg-[var(--purple-light)] text-[var(--purple-base)]",
-  red: "bg-[var(--red-light)] text-[var(--red-base)]",
-  yellow: "bg-[var(--yellow-light)] text-[var(--yellow-base)]",
-} satisfies Record<NonNullable<TagProps["variant"]>, string>;
-
-const getCategoryColor = (colour: string): NonNullable<TagProps["variant"]> => {
-  if (colour in categoryIconToneByColor) {
-    return colour as NonNullable<TagProps["variant"]>;
-  }
-
-  return "gray";
-};
-
-const getCategoryIcon = (icon: string) => {
-  return categoryIconByValue[icon] ?? BriefcaseBusiness;
-};
-
-const formatTransactionCount = (count: number) => {
-  return count === 1 ? "1 item" : `${count} items`;
-};
-
-const getCategoryStats = (categories: Category[]): CategoryStat[] => {
-  const mostUsedCategory = categories.reduce<Category | null>((current, category) => {
-    if (!current || category.transactionsAmount > current.transactionsAmount) {
-      return category;
-    }
-
-    return current;
-  }, null);
-
-  return [
-    {
-      value: String(categories.length),
-      helper: "Total categories",
-      icon: TagIcon,
-      iconClassName: "text-[var(--gray-700)]",
-    },
-    {
-      value: String(categories.reduce((total, category) => total + category.transactionsAmount, 0)),
-      helper: "Total transactions",
-      icon: ArrowUpDown,
-      iconClassName: "text-[var(--purple-base)]",
-    },
-    {
-      value: mostUsedCategory?.title ?? "-",
-      helper: "Most used category",
-      icon: Utensils,
-      iconClassName: "text-[var(--blue-base)]",
-    },
-  ];
-};
+  categoryIconToneByColor,
+  formatTransactionCount,
+  getCategoryColor,
+  getCategoryIcon,
+  getCategoryStats,
+  type CategoryStat,
+} from "@/entities/category";
+import { useCategoriesQuery } from "@/entities/category";
+import { useDeleteCategoryMutation } from "@/features/category/delete-category";
+import { CategoryFormDialog } from "@/features/category/save-category";
+import type { Category } from "@/shared/api/types";
+import { cn } from "@/shared/lib/utils";
+import { ActionAlertDialog } from "@/shared/ui/action-alert-dialog";
+import { Button } from "@/shared/ui/button";
+import { Card } from "@/shared/ui/card";
+import { IconButton } from "@/shared/ui/icon-button";
+import { Skeleton } from "@/shared/ui/skeleton";
+import { Tag } from "@/shared/ui/tag";
 
 function CategoriesPage() {
   const categoriesQuery = useCategoriesQuery();

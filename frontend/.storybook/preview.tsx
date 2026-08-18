@@ -2,7 +2,7 @@ import type { Preview } from "@storybook/react-vite";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { RouterContextProvider } from "@tanstack/react-router";
 
-import { queryClient } from "../src/lib/query-client";
+import { queryClient } from "../src/shared/lib/query-client";
 import { router } from "../src/router";
 import "../src/index.css";
 

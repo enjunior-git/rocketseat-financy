@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { UserRoundPlus } from "lucide-react";
 
-import Logo from "@/assets/logo.svg";
-import { LoginForm } from "@/components/forms/login-form";
-import { buttonVariants } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import Logo from "@/shared/assets/logo.svg";
+import { LoginForm } from "@/features/auth/login";
+import { buttonVariants } from "@/shared/ui/button";
+import { Card } from "@/shared/ui/card";
 
 function LoginPage() {
   return (

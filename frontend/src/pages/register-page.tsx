@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import { LogIn } from "lucide-react";
 
-import Logo from "@/assets/logo.svg";
-import { RegisterForm } from "@/components/forms/register-form";
-import { buttonVariants } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import Logo from "@/shared/assets/logo.svg";
+import { RegisterForm } from "@/features/auth/register";
+import { buttonVariants } from "@/shared/ui/button";
+import { Card } from "@/shared/ui/card";
 
 function RegisterPage() {
   return (

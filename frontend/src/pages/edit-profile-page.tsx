@@ -1,8 +1,8 @@
-import { EditProfileForm } from "@/components/forms/edit-profile-form";
-import { Card } from "@/components/ui/card";
-import { UserAvatar } from "@/components/ui/user-avatar";
-import { useUpdateUserMutation } from "@/hooks/use-update-user-mutation";
-import { useAuthStore } from "@/stores/auth";
+import { EditProfileForm } from "@/features/user/update-profile";
+import { Card } from "@/shared/ui/card";
+import { UserAvatar } from "@/shared/ui/user-avatar";
+import { useUpdateUserMutation } from "@/features/user/update-profile";
+import { useAuthStore } from "@/entities/session";
 
 type EditProfilePageProps = {
   email?: string;

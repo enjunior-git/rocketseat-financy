@@ -1,40 +1,39 @@
 import {
-  BriefcaseBusiness,
   ChevronLeft,
   ChevronRight,
   CircleArrowDown,
   CircleArrowUp,
-  Clapperboard,
-  Fuel,
-  Gift,
   Pencil,
   Plus,
-  RefreshCw,
   Search,
-  ShoppingCart,
   Trash2,
-  Utensils,
-  WalletCards,
 } from "lucide-react";
 
 import {
-  TransactionFormDialog,
-  type TransactionFormValues,
-} from "@/components/forms/transaction-form-dialog";
-import { ActionAlertDialog } from "@/components/ui/action-alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { IconButton } from "@/components/ui/icon-button";
-import { Input } from "@/components/ui/input";
-import { PaginationButton } from "@/components/ui/pagination-button";
-import { Select, type SelectOption } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tag, type TagProps } from "@/components/ui/tag";
-import { useCategoriesQuery } from "@/hooks/use-categories-query";
-import { useDeleteTransactionMutation } from "@/hooks/use-delete-transaction-mutation";
-import { useTransactionsQuery } from "@/hooks/use-transactions-query";
-import { cn } from "@/lib/utils";
-import type { Category, Transaction } from "@/types";
+  categoryIconToneByColor,
+  getCategoryColor,
+  getCategoryIcon,
+} from "@/entities/category";
+import { useCategoriesQuery } from "@/entities/category";
+import {
+  formatDate,
+  formatSignedCurrency,
+} from "@/entities/transaction";
+import { useTransactionsQuery } from "@/entities/transaction";
+import { useDeleteTransactionMutation } from "@/features/transaction/delete-transaction";
+import { toTransactionFormValues } from "@/features/transaction/save-transaction";
+import { TransactionFormDialog } from "@/features/transaction/save-transaction";
+import type { Category, Transaction } from "@/shared/api/types";
+import { cn } from "@/shared/lib/utils";
+import { ActionAlertDialog } from "@/shared/ui/action-alert-dialog";
+import { Button } from "@/shared/ui/button";
+import { Card } from "@/shared/ui/card";
+import { IconButton } from "@/shared/ui/icon-button";
+import { Input } from "@/shared/ui/input";
+import { PaginationButton } from "@/shared/ui/pagination-button";
+import { Select, type SelectOption } from "@/shared/ui/select";
+import { Skeleton } from "@/shared/ui/skeleton";
+import { Tag, type TagProps } from "@/shared/ui/tag";
 
 type TransactionRow = {
   amount: string;
@@ -62,99 +61,12 @@ const filterOptions = {
   ],
 } satisfies Record<string, SelectOption[]>;
 
-const categoryIconByValue: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
-  education: Gift,
-  entertainment: Clapperboard,
-  fitness: RefreshCw,
-  food: Utensils,
-  gifts: Gift,
-  health: Gift,
-  home: Gift,
-  income: WalletCards,
-  pets: ShoppingCart,
-  savings: RefreshCw,
-  shopping: ShoppingCart,
-  transport: Fuel,
-  utilities: Gift,
-  work: BriefcaseBusiness,
-};
-
-const categoryIconToneByColor = {
-  blue: "bg-[var(--blue-light)] text-[var(--blue-base)]",
-  gray: "bg-[var(--gray-200)] text-[var(--gray-700)]",
-  green: "bg-[var(--green-light)] text-[var(--green-base)]",
-  orange: "bg-[var(--orange-light)] text-[var(--orange-base)]",
-  pink: "bg-[var(--pink-light)] text-[var(--pink-base)]",
-  purple: "bg-[var(--purple-light)] text-[var(--purple-base)]",
-  red: "bg-[var(--red-light)] text-[var(--red-base)]",
-  yellow: "bg-[var(--yellow-light)] text-[var(--yellow-base)]",
-} satisfies Record<NonNullable<TagProps["variant"]>, string>;
-
-const getCategoryColor = (colour?: string): NonNullable<TagProps["variant"]> => {
-  if (colour && colour in categoryIconToneByColor) {
-    return colour as NonNullable<TagProps["variant"]>;
-  }
-
-  return "gray";
-};
-
-const getCategoryIcon = (icon?: string) => {
-  if (!icon) {
-    return BriefcaseBusiness;
-  }
-
-  return categoryIconByValue[icon] ?? BriefcaseBusiness;
-};
-
-function toTransactionFormValues(
-  transaction: Pick<TransactionRow, "amount" | "categoryId" | "date" | "description" | "type">,
-): TransactionFormValues {
-  return {
-    amount: transaction.amount
-      .replace(/^[+-]\s*R\$\s*/, "")
-      .replace(/\./g, "")
-      .replace(",", "."),
-    categoryId: transaction.categoryId,
-    date: toInputDate(transaction.date),
-    description: transaction.description,
-    type: transaction.type,
-  };
-}
-
-function toInputDate(date: string) {
-  if (date.includes("-")) {
-    return date.slice(0, 10);
-  }
-
-  const [month, day, year] = date.split("/");
-
-  return `20${year}-${month}-${day}`;
-}
-
-function formatCurrency(amount: number, type: Transaction["type"]) {
-  const formattedAmount = new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(amount);
-
-  return `${type === "income" ? "+" : "-"} ${formattedAmount}`;
-}
-
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
-    timeZone: "UTC",
-  }).format(new Date(date));
-}
-
 function toTransactionRow(transaction: Transaction): TransactionRow {
   const category = transaction.category;
   const categoryVariant = getCategoryColor(category?.colour);
 
   return {
-    amount: formatCurrency(transaction.amount, transaction.type),
+    amount: formatSignedCurrency(transaction.amount, transaction.type),
     category: category?.title ?? "Uncategorized",
     categoryId: transaction.categoryId,
     categoryVariant,

@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, House, SearchX } from "lucide-react";
 
-import Logo from "@/assets/logo.svg";
-import { buttonVariants } from "@/components/ui/button";
+import Logo from "@/shared/assets/logo.svg";
+import { buttonVariants } from "@/shared/ui/button";
 
 function NotFoundPage() {
   return (

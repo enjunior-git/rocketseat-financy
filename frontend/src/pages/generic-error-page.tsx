@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { House, RefreshCw, TriangleAlert } from "lucide-react";
 
-import Logo from "@/assets/logo.svg";
-import { Button, buttonVariants } from "@/components/ui/button";
+import Logo from "@/shared/assets/logo.svg";
+import { Button, buttonVariants } from "@/shared/ui/button";
 
 type GenericErrorPageProps = {
   error?: Error;

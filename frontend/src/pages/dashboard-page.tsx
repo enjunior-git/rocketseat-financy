@@ -1,26 +1,31 @@
 import { Link, type LinkProps } from "@tanstack/react-router";
 import {
-  BriefcaseBusiness,
   ChevronRight,
   CircleArrowDown,
   CircleArrowUp,
-  Fuel,
-  Gift,
   Plus,
-  RefreshCw,
-  ShoppingCart,
-  Utensils,
   WalletCards,
 } from "lucide-react";
 
-import { TransactionFormDialog } from "@/components/forms/transaction-form-dialog";
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tag, type TagProps } from "@/components/ui/tag";
-import { useTransactionSummaryQuery } from "@/hooks/use-transaction-summary-query";
-import { useTransactionsQuery } from "@/hooks/use-transactions-query";
-import { cn } from "@/lib/utils";
-import type { CategoryTransactionSummary, Transaction, TransactionSummary } from "@/types";
+import {
+  categoryIconToneByColor,
+  formatTransactionCount,
+  getCategoryColor,
+  getCategoryIcon,
+} from "@/entities/category";
+import {
+  formatCurrency,
+  formatDate,
+  formatSignedCurrency,
+} from "@/entities/transaction";
+import { useTransactionSummaryQuery } from "@/entities/transaction";
+import { useTransactionsQuery } from "@/entities/transaction";
+import { TransactionFormDialog } from "@/features/transaction/save-transaction";
+import type { CategoryTransactionSummary, Transaction, TransactionSummary } from "@/shared/api/types";
+import { cn } from "@/shared/lib/utils";
+import { Card } from "@/shared/ui/card";
+import { Skeleton } from "@/shared/ui/skeleton";
+import { Tag, type TagProps } from "@/shared/ui/tag";
 
 type SummaryCard = {
   amount: string;
@@ -52,74 +57,6 @@ const summaryToneClassNames = {
   green: "text-[var(--green-dark)]",
   red: "text-[var(--red-base)]",
 } as const;
-
-const categoryIconByValue: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
-  education: Gift,
-  entertainment: RefreshCw,
-  fitness: RefreshCw,
-  food: Utensils,
-  gifts: Gift,
-  health: Gift,
-  home: Gift,
-  income: WalletCards,
-  pets: ShoppingCart,
-  savings: RefreshCw,
-  shopping: ShoppingCart,
-  transport: Fuel,
-  utilities: Gift,
-  work: BriefcaseBusiness,
-};
-
-const categoryIconToneByColor = {
-  blue: "bg-[var(--blue-light)] text-[var(--blue-base)]",
-  gray: "bg-[var(--gray-200)] text-[var(--gray-700)]",
-  green: "bg-[var(--green-light)] text-[var(--green-base)]",
-  orange: "bg-[var(--orange-light)] text-[var(--orange-base)]",
-  pink: "bg-[var(--pink-light)] text-[var(--pink-base)]",
-  purple: "bg-[var(--purple-light)] text-[var(--purple-base)]",
-  red: "bg-[var(--red-light)] text-[var(--red-base)]",
-  yellow: "bg-[var(--yellow-light)] text-[var(--yellow-base)]",
-} satisfies Record<NonNullable<TagProps["variant"]>, string>;
-
-const getCategoryColor = (colour?: string): NonNullable<TagProps["variant"]> => {
-  if (colour && colour in categoryIconToneByColor) {
-    return colour as NonNullable<TagProps["variant"]>;
-  }
-
-  return "gray";
-};
-
-const getCategoryIcon = (icon?: string) => {
-  if (!icon) {
-    return BriefcaseBusiness;
-  }
-
-  return categoryIconByValue[icon] ?? BriefcaseBusiness;
-};
-
-const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  }).format(amount);
-};
-
-const formatSignedCurrency = (amount: number, type: Transaction["type"]) => {
-  return `${type === "income" ? "+" : "-"} ${formatCurrency(amount)}`;
-};
-
-const formatDate = (date: string) => {
-  return new Intl.DateTimeFormat("en-US", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
-    timeZone: "UTC",
-  }).format(new Date(date));
-};
-
-const formatTransactionCount = (count: number) => {
-  return count === 1 ? "1 item" : `${count} items`;
-};
 
 const getSummaryCards = (summary?: TransactionSummary): SummaryCard[] => [
   {
