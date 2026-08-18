@@ -3,6 +3,7 @@
   "private": true,
   "packageManager": "pnpm@10.33.0",
   "scripts": {
+    "postinstall": "./scripts/postInstall.sh",
     "dev": "turbo dev",
     "build": "turbo build",
     "test:e2e": "pnpm --filter e2e test",
