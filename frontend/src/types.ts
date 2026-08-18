@@ -17,6 +17,10 @@ export interface LoginInput {
   password: string;
 }
 
+export interface UpdateUserInput {
+  name: string;
+}
+
 export interface Category {
   id: string;
   title: string;

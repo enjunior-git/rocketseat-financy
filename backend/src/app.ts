@@ -11,6 +11,7 @@ import { AuthResolver } from "./resolvers/auth.resolver.js";
 import { CategoryResolver } from "./resolvers/category.resolver.js";
 import { HealthcheckResolver } from "./resolvers/healthcheck.resolver.js";
 import { TransactionResolver } from "./resolvers/transaction.resolver.js";
+import { UserResolver } from "./resolvers/user.resolver.js";
 
 type CreateAppOptions = {
   corsOrigin?: string;
@@ -33,7 +34,13 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Graphql
   );
 
   const schema = await buildSchema({
-    resolvers: [AuthResolver, HealthcheckResolver, CategoryResolver, TransactionResolver],
+    resolvers: [
+      AuthResolver,
+      HealthcheckResolver,
+      CategoryResolver,
+      TransactionResolver,
+      UserResolver,
+    ],
     validate: false,
     emitSchemaFile: options.emitSchemaFile ?? "./schema.graphql",
   });

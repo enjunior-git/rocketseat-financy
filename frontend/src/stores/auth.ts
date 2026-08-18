@@ -11,6 +11,7 @@ type AuthState = {
   refreshToken: string | null;
   isAuthenticated: boolean;
   setSession: (session: AuthSession) => void;
+  updateUser: (user: User) => void;
   logout: () => void;
 };
 
@@ -28,6 +29,11 @@ export const useAuthStore = create<AuthState>()(
           refreshToken,
           isAuthenticated: true,
         });
+      },
+      updateUser: (user) => {
+        set((state) => ({
+          user: state.user ? user : state.user,
+        }));
       },
       logout: () => {
         set({
