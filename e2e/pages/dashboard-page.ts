@@ -8,6 +8,26 @@ class DashboardPage {
     await expect(this.page.getByRole("heading", { name: "Recent transactions" })).toBeVisible();
   }
 
+  async open() {
+    await this.page.getByRole("link", { name: "Financy" }).click();
+  }
+
+  async expectListedData({
+    categoryTitle,
+    transactionAmount,
+    transactionDescription,
+  }: {
+    categoryTitle: string;
+    transactionAmount: string;
+    transactionDescription: string;
+  }) {
+    await expect(this.page.getByText(transactionDescription)).toBeVisible();
+    await expect(this.page.getByText(`- R$ ${transactionAmount.replace(".", ",")}`)).toBeVisible();
+    await expect(this.page.getByText(categoryTitle).first()).toBeVisible();
+    await expect(this.page.getByText("1 item")).toBeVisible();
+    await expect(this.page.getByText("Monthly expenses")).toBeVisible();
+  }
+
   async expectSignedIn() {
     await expect
       .poll(() =>

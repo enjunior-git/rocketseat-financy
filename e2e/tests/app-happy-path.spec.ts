@@ -70,7 +70,19 @@ test.describe("App Happy Path", () => {
       await transactionsPage.expectTransactionVisible(transaction);
     });
 
+    await test.step("List dashboard", async () => {
+      await dashboardPage.open();
+      await dashboardPage.expectCurrentPage();
+      await dashboardPage.expectListedData({
+        categoryTitle: category.title,
+        transactionAmount: transaction.amount,
+        transactionDescription: transaction.description,
+      });
+    });
+
     await test.step("Delete transaction", async () => {
+      await transactionsPage.open();
+      await transactionsPage.expectCurrentPage();
       await transactionsPage.deleteTransaction(transaction);
       await transactionsPage.expectTransactionHidden(transaction);
     });

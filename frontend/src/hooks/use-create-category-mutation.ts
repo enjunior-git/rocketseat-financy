@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { categoriesQueryKey } from "@/hooks/use-categories-query";
+import { transactionSummaryQueryKey } from "@/hooks/use-transaction-summary-query";
 import { createCategory } from "@/lib/categories/create-category";
 import type { CreateCategoryInput } from "@/types";
 
@@ -10,7 +11,10 @@ const useCreateCategoryMutation = () => {
   return useMutation({
     mutationFn: (input: CreateCategoryInput) => createCategory(input),
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: categoriesQueryKey });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: categoriesQueryKey }),
+        queryClient.invalidateQueries({ queryKey: transactionSummaryQueryKey }),
+      ]);
     },
   });
 };

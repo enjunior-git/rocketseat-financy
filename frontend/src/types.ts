@@ -57,3 +57,21 @@ export interface CreateTransactionInput {
   categoryId: string;
   type: TransactionType;
 }
+
+export interface CategoryTransactionSummary {
+  id: string;
+  title: string;
+  colour: string;
+  transactionsAmount: number;
+  totalExpensesAmount: number;
+}
+
+export interface TransactionSummary {
+  totalIncomeMonthly: number;
+  totalExpensesMonthly: number;
+  totalBalance: number;
+  categories: CategoryTransactionSummary[];
+  totalCategoriesAmount: number;
+  totalTransactionsAmount: number;
+  mostUsedCategory: CategoryTransactionSummary | null;
+}

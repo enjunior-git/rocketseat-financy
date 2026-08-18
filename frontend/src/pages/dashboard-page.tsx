@@ -5,6 +5,7 @@ import {
   CircleArrowDown,
   CircleArrowUp,
   Fuel,
+  Gift,
   Plus,
   RefreshCw,
   ShoppingCart,
@@ -16,7 +17,10 @@ import { TransactionFormDialog } from "@/components/forms/transaction-form-dialo
 import { Navbar } from "@/components/navigation/navbar";
 import { Card } from "@/components/ui/card";
 import { Tag, type TagProps } from "@/components/ui/tag";
+import { useTransactionSummaryQuery } from "@/hooks/use-transaction-summary-query";
+import { useTransactionsQuery } from "@/hooks/use-transactions-query";
 import { cn } from "@/lib/utils";
+import type { CategoryTransactionSummary, Transaction, TransactionSummary } from "@/types";
 
 type SummaryCard = {
   amount: string;
@@ -36,119 +40,12 @@ type RecentTransaction = {
   type: "income" | "expense";
 };
 
-type CategorySummary = {
+type DashboardCategorySummary = {
   amount: string;
   items: string;
   title: string;
   variant: TagProps["variant"];
 };
-
-const summaryCards: SummaryCard[] = [
-  {
-    label: "Total balance",
-    amount: "R$ 12.847,32",
-    icon: WalletCards,
-    tone: "purple",
-  },
-  {
-    label: "Monthly income",
-    amount: "R$ 4.250,00",
-    icon: CircleArrowUp,
-    tone: "green",
-  },
-  {
-    label: "Monthly expenses",
-    amount: "R$ 2.180,45",
-    icon: CircleArrowDown,
-    tone: "red",
-  },
-];
-
-const recentTransactions: RecentTransaction[] = [
-  {
-    description: "Salary payment",
-    date: "12/01/25",
-    category: "Income",
-    categoryVariant: "green",
-    amount: "+ R$ 4.250,00",
-    type: "income",
-    icon: BriefcaseBusiness,
-    iconClassName: "bg-[var(--green-light)] text-[var(--green-base)]",
-  },
-  {
-    description: "Dinner at restaurant",
-    date: "11/30/25",
-    category: "Food",
-    categoryVariant: "blue",
-    amount: "- R$ 89,50",
-    type: "expense",
-    icon: Utensils,
-    iconClassName: "bg-[var(--blue-light)] text-[var(--blue-base)]",
-  },
-  {
-    description: "Gas station",
-    date: "11/29/25",
-    category: "Transport",
-    categoryVariant: "purple",
-    amount: "- R$ 100,00",
-    type: "expense",
-    icon: Fuel,
-    iconClassName: "bg-[var(--purple-light)] text-[var(--purple-base)]",
-  },
-  {
-    description: "Market shopping",
-    date: "11/28/25",
-    category: "Market",
-    categoryVariant: "orange",
-    amount: "- R$ 156,80",
-    type: "expense",
-    icon: ShoppingCart,
-    iconClassName: "bg-[var(--orange-light)] text-[var(--orange-base)]",
-  },
-  {
-    description: "Investment return",
-    date: "11/26/25",
-    category: "Investment",
-    categoryVariant: "green",
-    amount: "+ R$ 340,25",
-    type: "income",
-    icon: RefreshCw,
-    iconClassName: "bg-[var(--green-light)] text-[var(--green-base)]",
-  },
-];
-
-const categories: CategorySummary[] = [
-  {
-    title: "Food",
-    items: "12 items",
-    amount: "R$ 542,30",
-    variant: "blue",
-  },
-  {
-    title: "Transport",
-    items: "8 items",
-    amount: "R$ 385,50",
-    variant: "purple",
-  },
-  {
-    title: "Market",
-    items: "3 items",
-    amount: "R$ 298,75",
-    variant: "orange",
-  },
-  {
-    title: "Entertainment",
-    items: "2 items",
-    amount: "R$ 186,20",
-    variant: "pink",
-  },
-  {
-    title: "Utilities",
-    items: "7 items",
-    amount: "R$ 245,80",
-    variant: "yellow",
-  },
-];
 
 const summaryToneClassNames = {
   purple: "text-[var(--purple-base)]",
@@ -156,7 +53,127 @@ const summaryToneClassNames = {
   red: "text-[var(--red-base)]",
 } as const;
 
+const categoryIconByValue: Record<string, React.ComponentType<React.SVGProps<SVGSVGElement>>> = {
+  education: Gift,
+  entertainment: RefreshCw,
+  fitness: RefreshCw,
+  food: Utensils,
+  gifts: Gift,
+  health: Gift,
+  home: Gift,
+  income: WalletCards,
+  pets: ShoppingCart,
+  savings: RefreshCw,
+  shopping: ShoppingCart,
+  transport: Fuel,
+  utilities: Gift,
+  work: BriefcaseBusiness,
+};
+
+const categoryIconToneByColor = {
+  blue: "bg-[var(--blue-light)] text-[var(--blue-base)]",
+  gray: "bg-[var(--gray-200)] text-[var(--gray-700)]",
+  green: "bg-[var(--green-light)] text-[var(--green-base)]",
+  orange: "bg-[var(--orange-light)] text-[var(--orange-base)]",
+  pink: "bg-[var(--pink-light)] text-[var(--pink-base)]",
+  purple: "bg-[var(--purple-light)] text-[var(--purple-base)]",
+  red: "bg-[var(--red-light)] text-[var(--red-base)]",
+  yellow: "bg-[var(--yellow-light)] text-[var(--yellow-base)]",
+} satisfies Record<NonNullable<TagProps["variant"]>, string>;
+
+const getCategoryColor = (colour?: string): NonNullable<TagProps["variant"]> => {
+  if (colour && colour in categoryIconToneByColor) {
+    return colour as NonNullable<TagProps["variant"]>;
+  }
+
+  return "gray";
+};
+
+const getCategoryIcon = (icon?: string) => {
+  if (!icon) {
+    return BriefcaseBusiness;
+  }
+
+  return categoryIconByValue[icon] ?? BriefcaseBusiness;
+};
+
+const formatCurrency = (amount: number) => {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(amount);
+};
+
+const formatSignedCurrency = (amount: number, type: Transaction["type"]) => {
+  return `${type === "income" ? "+" : "-"} ${formatCurrency(amount)}`;
+};
+
+const formatDate = (date: string) => {
+  return new Intl.DateTimeFormat("en-US", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "2-digit",
+    timeZone: "UTC",
+  }).format(new Date(date));
+};
+
+const formatTransactionCount = (count: number) => {
+  return count === 1 ? "1 item" : `${count} items`;
+};
+
+const getSummaryCards = (summary?: TransactionSummary): SummaryCard[] => [
+  {
+    label: "Total balance",
+    amount: formatCurrency(summary?.totalBalance ?? 0),
+    icon: WalletCards,
+    tone: "purple",
+  },
+  {
+    label: "Monthly income",
+    amount: formatCurrency(summary?.totalIncomeMonthly ?? 0),
+    icon: CircleArrowUp,
+    tone: "green",
+  },
+  {
+    label: "Monthly expenses",
+    amount: formatCurrency(summary?.totalExpensesMonthly ?? 0),
+    icon: CircleArrowDown,
+    tone: "red",
+  },
+];
+
+const toRecentTransaction = (transaction: Transaction): RecentTransaction => {
+  const categoryVariant = getCategoryColor(transaction.category?.colour);
+
+  return {
+    amount: formatSignedCurrency(transaction.amount, transaction.type),
+    category: transaction.category?.title ?? "Uncategorized",
+    categoryVariant,
+    date: formatDate(transaction.date),
+    description: transaction.description,
+    icon: getCategoryIcon(transaction.category?.icon),
+    iconClassName: categoryIconToneByColor[categoryVariant],
+    type: transaction.type,
+  };
+};
+
+const toCategorySummary = (category: CategoryTransactionSummary): DashboardCategorySummary => ({
+  amount: formatCurrency(category.totalExpensesAmount),
+  items: formatTransactionCount(category.transactionsAmount),
+  title: category.title,
+  variant: getCategoryColor(category.colour),
+});
+
 function DashboardPage() {
+  const transactionsQuery = useTransactionsQuery();
+  const summaryQuery = useTransactionSummaryQuery();
+  const summaryCards = getSummaryCards(summaryQuery.data);
+  const recentTransactions = (transactionsQuery.data ?? [])
+    .slice(-5)
+    .reverse()
+    .map(toRecentTransaction);
+  const categories = (summaryQuery.data?.categories ?? []).map(toCategorySummary);
+
   return (
     <main className="min-h-screen bg-[var(--gray-100)]">
       <Navbar activeItem="Dashboard" userInitials="CT" />
@@ -177,6 +194,20 @@ function DashboardPage() {
             />
 
             <div>
+              {transactionsQuery.isLoading ? (
+                <DashboardStatus message="Loading transactions..." />
+              ) : null}
+
+              {transactionsQuery.isError ? (
+                <DashboardStatus message={transactionsQuery.error.message} />
+              ) : null}
+
+              {!transactionsQuery.isLoading &&
+              !transactionsQuery.isError &&
+              recentTransactions.length === 0 ? (
+                <DashboardStatus message="No transactions yet." />
+              ) : null}
+
               {recentTransactions.map((transaction) => (
                 <TransactionRow
                   key={`${transaction.description}-${transaction.date}`}
@@ -207,6 +238,20 @@ function DashboardPage() {
             />
 
             <div className="flex flex-col gap-4 px-6 py-6">
+              {summaryQuery.isLoading ? (
+                <p className="text-sm leading-5 text-[var(--gray-600)]">Loading categories...</p>
+              ) : null}
+
+              {summaryQuery.isError ? (
+                <p className="text-sm leading-5 text-[var(--gray-600)]">
+                  {summaryQuery.error.message}
+                </p>
+              ) : null}
+
+              {!summaryQuery.isLoading && !summaryQuery.isError && categories.length === 0 ? (
+                <p className="text-sm leading-5 text-[var(--gray-600)]">No categories yet.</p>
+              ) : null}
+
               {categories.map((category) => (
                 <div
                   key={category.title}
@@ -226,6 +271,14 @@ function DashboardPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+function DashboardStatus({ message }: { message: string }) {
+  return (
+    <div className="border-b border-[var(--gray-200)] px-6 py-8 last:border-b-0">
+      <p className="text-sm leading-5 text-[var(--gray-600)]">{message}</p>
+    </div>
   );
 }
 
