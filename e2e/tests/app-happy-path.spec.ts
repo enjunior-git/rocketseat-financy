@@ -15,6 +15,7 @@ test.describe("App Happy Path", () => {
     const categoriesPage = new CategoriesPage(page);
     const transactionsPage = new TransactionsPage(page);
 
+    const name = "Happy Path";
     const email = `happy-path-${Date.now()}@example.com`;
     const password = "secret123";
     const category = {
@@ -39,7 +40,7 @@ test.describe("App Happy Path", () => {
     await test.step("Registration", async () => {
       await registerPage.open();
       await registerPage.registerUser({
-        name: "Happy Path",
+        name,
         email,
         password,
       });
@@ -63,6 +64,7 @@ test.describe("App Happy Path", () => {
 
       await dashboardPage.expectCurrentPage();
       await dashboardPage.expectSignedIn();
+      await dashboardPage.expectUserAvatarInitials("HP");
     });
 
     await test.step("Create category", async () => {

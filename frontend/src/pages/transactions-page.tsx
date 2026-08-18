@@ -188,7 +188,7 @@ function TransactionsPage() {
 
   return (
     <main className="min-h-screen bg-[var(--gray-100)]">
-      <Navbar activeItem="Transactions" userInitials="CT" />
+      <Navbar activeItem="Transactions" />
 
       <section className="mx-auto w-full max-w-[1280px] px-6 py-12 sm:px-10">
         <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">

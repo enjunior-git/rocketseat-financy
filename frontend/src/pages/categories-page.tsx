@@ -118,7 +118,7 @@ function CategoriesPage() {
 
   return (
     <main className="min-h-screen bg-[var(--gray-100)]">
-      <Navbar activeItem="Categories" userInitials="CT" />
+      <Navbar activeItem="Categories" />
 
       <section className="mx-auto w-full max-w-[1280px] px-6 py-12 sm:px-10">
         <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">

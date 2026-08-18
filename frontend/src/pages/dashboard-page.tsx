@@ -176,7 +176,7 @@ function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-[var(--gray-100)]">
-      <Navbar activeItem="Dashboard" userInitials="CT" />
+      <Navbar activeItem="Dashboard" />
 
       <section className="mx-auto grid w-full max-w-[1280px] gap-6 px-6 py-12 sm:px-10">
         <div className="grid gap-6 lg:grid-cols-3">

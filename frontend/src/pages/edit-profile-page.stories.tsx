@@ -12,7 +12,6 @@ const meta = {
   args: {
     email: "account@example.com",
     name: "Test Account",
-    userInitials: "CT",
   },
 } satisfies Meta<typeof EditProfilePage>;
 

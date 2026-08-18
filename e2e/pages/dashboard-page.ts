@@ -41,6 +41,10 @@ class DashboardPage {
       .toBe(true);
   }
 
+  async expectUserAvatarInitials(initials: string) {
+    await expect(this.page.getByLabel(`User avatar ${initials}`)).toBeVisible();
+  }
+
   async openProfile() {
     await this.page.getByRole("link", { name: "Edit profile" }).click();
   }
