@@ -21,10 +21,19 @@ test.describe("App Happy Path", () => {
       title: `Food ${Date.now()}`,
       description: "Restaurants and delivery",
     };
+    const editedCategory = {
+      title: `Meals ${Date.now()}`,
+      description: "Restaurants, cafes and delivery",
+    };
     const transaction = {
       amount: "89.50",
       date: "2026-08-17",
       description: `Dinner ${Date.now()}`,
+    };
+    const editedTransaction = {
+      amount: "120.75",
+      date: "2026-08-18",
+      description: `Expensive dinner ${Date.now()}`,
     };
 
     await test.step("Registration", async () => {
@@ -70,28 +79,50 @@ test.describe("App Happy Path", () => {
       await transactionsPage.expectTransactionVisible(transaction);
     });
 
+    await test.step("Edit category", async () => {
+      await categoriesPage.open();
+      await categoriesPage.expectCurrentPage();
+      await categoriesPage.editCategory({
+        currentTitle: category.title,
+        ...editedCategory,
+      });
+      await categoriesPage.expectCategoryVisible(editedCategory);
+      await categoriesPage.expectCategoryHidden(category);
+    });
+
+    await test.step("Edit transaction", async () => {
+      await transactionsPage.open();
+      await transactionsPage.expectCurrentPage();
+      await transactionsPage.editTransaction({
+        currentDescription: transaction.description,
+        ...editedTransaction,
+      });
+      await transactionsPage.expectTransactionVisible(editedTransaction);
+      await transactionsPage.expectTransactionHidden(transaction);
+    });
+
     await test.step("List dashboard", async () => {
       await dashboardPage.open();
       await dashboardPage.expectCurrentPage();
       await dashboardPage.expectListedData({
-        categoryTitle: category.title,
-        transactionAmount: transaction.amount,
-        transactionDescription: transaction.description,
+        categoryTitle: editedCategory.title,
+        transactionAmount: editedTransaction.amount,
+        transactionDescription: editedTransaction.description,
       });
     });
 
     await test.step("Delete transaction", async () => {
       await transactionsPage.open();
       await transactionsPage.expectCurrentPage();
-      await transactionsPage.deleteTransaction(transaction);
-      await transactionsPage.expectTransactionHidden(transaction);
+      await transactionsPage.deleteTransaction(editedTransaction);
+      await transactionsPage.expectTransactionHidden(editedTransaction);
     });
 
     await test.step("Delete category", async () => {
       await categoriesPage.open();
       await categoriesPage.expectCurrentPage();
-      await categoriesPage.deleteCategory(category);
-      await categoriesPage.expectCategoryHidden(category);
+      await categoriesPage.deleteCategory(editedCategory);
+      await categoriesPage.expectCategoryHidden(editedCategory);
     });
   });
 });

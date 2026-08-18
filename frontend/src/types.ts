@@ -36,6 +36,8 @@ export interface CreateCategoryInput {
   colour: string;
 }
 
+export type UpdateCategoryInput = Partial<CreateCategoryInput>;
+
 export type TransactionType = "expense" | "income";
 
 export interface Transaction {
@@ -57,6 +59,8 @@ export interface CreateTransactionInput {
   categoryId: string;
   type: TransactionType;
 }
+
+export type UpdateTransactionInput = Partial<CreateTransactionInput>;
 
 export interface CategoryTransactionSummary {
   id: string;

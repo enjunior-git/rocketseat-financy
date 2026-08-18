@@ -29,7 +29,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreateCategoryMutation } from "@/hooks/use-create-category-mutation";
+import { useUpdateCategoryMutation } from "@/hooks/use-update-category-mutation";
 import { cn } from "@/lib/utils";
+import type { CreateCategoryInput } from "@/types";
 
 type CategoryFormValues = {
   color?: string;
@@ -39,6 +41,7 @@ type CategoryFormValues = {
 };
 
 type CategoryFormDialogProps = {
+  categoryId?: string;
   defaultValues?: CategoryFormValues;
   mode: "create" | "edit";
   trigger: React.ReactElement;
@@ -71,37 +74,36 @@ const categoryColors = [
   { label: "Yellow", value: "yellow", className: "bg-[var(--yellow-base)]" },
 ] as const;
 
-function CategoryFormDialog({ defaultValues, mode, trigger }: CategoryFormDialogProps) {
+function CategoryFormDialog({ categoryId, defaultValues, mode, trigger }: CategoryFormDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const createCategoryMutation = useCreateCategoryMutation();
+  const updateCategoryMutation = useUpdateCategoryMutation();
   const defaultIcon = defaultValues?.icon ?? "work";
   const defaultColor = defaultValues?.color ?? "green";
   const isEditing = mode === "edit";
+  const isPending = createCategoryMutation.isPending || updateCategoryMutation.isPending;
+  const mutationError = createCategoryMutation.error ?? updateCategoryMutation.error;
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (isEditing) {
+    const form = event.currentTarget;
+    const input = getCategoryFormInput(new FormData(form), {
+      color: defaultColor,
+      icon: defaultIcon,
+    });
+
+    const onSuccess = () => {
+      form.reset();
+      setIsOpen(false);
+    };
+
+    if (isEditing && categoryId) {
+      updateCategoryMutation.mutate({ id: categoryId, data: input }, { onSuccess });
       return;
     }
 
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-
-    createCategoryMutation.mutate(
-      {
-        title: String(formData.get("title") ?? ""),
-        description: String(formData.get("description") ?? ""),
-        icon: String(formData.get("icon") ?? defaultIcon),
-        colour: String(formData.get("color") ?? defaultColor),
-      },
-      {
-        onSuccess: () => {
-          form.reset();
-          setIsOpen(false);
-        },
-      },
-    );
+    createCategoryMutation.mutate(input, { onSuccess });
   }
 
   return (
@@ -125,7 +127,7 @@ function CategoryFormDialog({ defaultValues, mode, trigger }: CategoryFormDialog
             name="title"
             placeholder="Ex. Food"
             defaultValue={defaultValues?.title}
-            disabled={createCategoryMutation.isPending}
+            disabled={isPending}
             required
           />
 
@@ -135,7 +137,7 @@ function CategoryFormDialog({ defaultValues, mode, trigger }: CategoryFormDialog
             placeholder="Category description"
             helperText="Optional"
             defaultValue={defaultValues?.description}
-            disabled={createCategoryMutation.isPending}
+            disabled={isPending}
           />
 
           <fieldset className="grid gap-2">
@@ -148,7 +150,7 @@ function CategoryFormDialog({ defaultValues, mode, trigger }: CategoryFormDialog
                     name="icon"
                     value={value}
                     defaultChecked={value === defaultIcon}
-                    disabled={createCategoryMutation.isPending}
+                    disabled={isPending}
                     required
                     className="peer sr-only"
                   />
@@ -171,7 +173,7 @@ function CategoryFormDialog({ defaultValues, mode, trigger }: CategoryFormDialog
                     name="color"
                     value={value}
                     defaultChecked={value === defaultColor}
-                    disabled={createCategoryMutation.isPending}
+                    disabled={isPending}
                     required
                     className="peer sr-only"
                   />
@@ -184,25 +186,33 @@ function CategoryFormDialog({ defaultValues, mode, trigger }: CategoryFormDialog
             </div>
           </fieldset>
 
-          {createCategoryMutation.isError ? (
-            <p className="text-sm leading-5 text-[var(--red-base)]">
-              {createCategoryMutation.error.message}
-            </p>
+          {mutationError ? (
+            <p className="text-sm leading-5 text-[var(--red-base)]">{mutationError.message}</p>
           ) : null}
 
           <Button
             type="submit"
             size="label"
             className="mt-1 w-full text-base leading-6"
-            disabled={createCategoryMutation.isPending}
+            disabled={isPending}
           >
-            {createCategoryMutation.isPending ? "Saving..." : "Save"}
+            {isPending ? "Saving..." : "Save"}
           </Button>
         </form>
       </DialogContent>
     </Dialog>
   );
 }
+
+const getCategoryFormInput = (
+  formData: FormData,
+  defaults: Pick<Required<CategoryFormValues>, "color" | "icon">,
+): CreateCategoryInput => ({
+  title: String(formData.get("title") ?? ""),
+  description: String(formData.get("description") ?? ""),
+  icon: String(formData.get("icon") ?? defaults.icon),
+  colour: String(formData.get("color") ?? defaults.color),
+});
 
 export type { CategoryFormDialogProps, CategoryFormValues };
 export { CategoryFormDialog };

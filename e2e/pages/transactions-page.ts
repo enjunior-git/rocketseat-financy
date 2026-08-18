@@ -27,8 +27,21 @@ class TransactionsPage {
   }
 
   async expectTransactionVisible({ amount, description }: CreateTransactionInput) {
-    await expect(this.page.getByText(description)).toBeVisible();
+    await expect(this.page.getByText(description, { exact: true })).toBeVisible();
     await expect(this.page.getByText(`- R$ ${amount.replace(".", ",")}`)).toBeVisible();
+  }
+
+  async editTransaction({
+    amount,
+    currentDescription,
+    date,
+    description,
+  }: CreateTransactionInput & { currentDescription: string }) {
+    await this.page.getByRole("button", { name: `Edit ${currentDescription}` }).click();
+    await this.page.getByLabel("Description").fill(description);
+    await this.page.getByLabel("Date").fill(date);
+    await this.page.getByLabel("Amount").fill(amount);
+    await this.page.getByRole("button", { name: "Save" }).click();
   }
 
   async deleteTransaction({ description }: Pick<CreateTransactionInput, "description">) {
@@ -37,7 +50,7 @@ class TransactionsPage {
   }
 
   async expectTransactionHidden({ description }: Pick<CreateTransactionInput, "description">) {
-    await expect(this.page.locator("tbody tr").filter({ hasText: description })).toHaveCount(0);
+    await expect(this.page.getByText(description, { exact: true })).toHaveCount(0);
   }
 }
 

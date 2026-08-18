@@ -301,6 +301,7 @@ function TransactionTableRow({
   categoryVariant,
   date,
   description,
+  id,
   onDelete,
   icon: Icon,
   iconClassName,
@@ -363,6 +364,7 @@ function TransactionTableRow({
           />
           <TransactionFormDialog
             mode="edit"
+            transactionId={id}
             defaultValues={toTransactionFormValues({
               amount,
               categoryId,

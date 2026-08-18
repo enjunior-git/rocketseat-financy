@@ -16,7 +16,9 @@ import { Label } from "@/components/ui/label";
 import { Select, type SelectOption } from "@/components/ui/select";
 import { useCategoriesQuery } from "@/hooks/use-categories-query";
 import { useCreateTransactionMutation } from "@/hooks/use-create-transaction-mutation";
+import { useUpdateTransactionMutation } from "@/hooks/use-update-transaction-mutation";
 import { cn } from "@/lib/utils";
+import type { CreateTransactionInput } from "@/types";
 
 type TransactionFormValues = {
   amount?: string;
@@ -30,44 +32,50 @@ type TransactionFormDialogProps = {
   defaultValues?: TransactionFormValues;
   mode: "create" | "edit";
   trigger: React.ReactElement;
+  transactionId?: string;
 };
 
-function TransactionFormDialog({ defaultValues, mode, trigger }: TransactionFormDialogProps) {
+function TransactionFormDialog({
+  defaultValues,
+  mode,
+  transactionId,
+  trigger,
+}: TransactionFormDialogProps) {
   const [isOpen, setIsOpen] = useState(false);
   const categoriesQuery = useCategoriesQuery();
   const createTransactionMutation = useCreateTransactionMutation();
+  const updateTransactionMutation = useUpdateTransactionMutation();
   const categoryOptions = getCategoryOptions(categoriesQuery.data ?? []);
   const defaultType = defaultValues?.type ?? "expense";
   const defaultCategoryId = defaultValues?.categoryId ?? categoryOptions[0]?.value ?? null;
   const isEditing = mode === "edit";
+  const isPending = createTransactionMutation.isPending || updateTransactionMutation.isPending;
+  const mutationError = createTransactionMutation.error ?? updateTransactionMutation.error;
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (isEditing || !defaultCategoryId) {
+    if (!defaultCategoryId) {
       return;
     }
 
     const form = event.currentTarget;
-    const formData = new FormData(form);
-    const rawDate = String(formData.get("date") ?? "");
-    const rawAmount = String(formData.get("amount") ?? "0");
+    const input = getTransactionFormInput(new FormData(form), {
+      categoryId: defaultCategoryId,
+      type: defaultType,
+    });
 
-    createTransactionMutation.mutate(
-      {
-        amount: Number(rawAmount.replace(",", ".")),
-        categoryId: String(formData.get("categoryId") ?? defaultCategoryId),
-        date: new Date(`${rawDate}T00:00:00.000Z`).toISOString(),
-        description: String(formData.get("description") ?? ""),
-        type: String(formData.get("type") ?? defaultType) as "expense" | "income",
-      },
-      {
-        onSuccess: () => {
-          form.reset();
-          setIsOpen(false);
-        },
-      },
-    );
+    const onSuccess = () => {
+      form.reset();
+      setIsOpen(false);
+    };
+
+    if (isEditing && transactionId) {
+      updateTransactionMutation.mutate({ id: transactionId, data: input }, { onSuccess });
+      return;
+    }
+
+    createTransactionMutation.mutate(input, { onSuccess });
   }
 
   return (
@@ -90,14 +98,14 @@ function TransactionFormDialog({ defaultValues, mode, trigger }: TransactionForm
               defaultChecked={defaultType === "expense"}
               icon={<CircleArrowDown />}
               label="Expense"
-              disabled={createTransactionMutation.isPending}
+              disabled={isPending}
               value="expense"
             />
             <TransactionTypeOption
               defaultChecked={defaultType === "income"}
               icon={<CircleArrowUp />}
               label="Income"
-              disabled={createTransactionMutation.isPending}
+              disabled={isPending}
               value="income"
             />
           </fieldset>
@@ -107,7 +115,7 @@ function TransactionFormDialog({ defaultValues, mode, trigger }: TransactionForm
             name="description"
             placeholder="Ex. Lunch at a restaurant"
             defaultValue={defaultValues?.description}
-            disabled={createTransactionMutation.isPending}
+            disabled={isPending}
             required
           />
 
@@ -117,24 +125,17 @@ function TransactionFormDialog({ defaultValues, mode, trigger }: TransactionForm
               name="date"
               type="date"
               defaultValue={defaultValues?.date}
-              disabled={createTransactionMutation.isPending}
+              disabled={isPending}
               required
             />
-            <AmountField
-              defaultValue={defaultValues?.amount ?? "0.00"}
-              disabled={createTransactionMutation.isPending}
-            />
+            <AmountField defaultValue={defaultValues?.amount ?? "0.00"} disabled={isPending} />
           </div>
 
           <Select
             label="Category"
             name="categoryId"
             defaultValue={defaultCategoryId}
-            disabled={
-              categoriesQuery.isLoading ||
-              createTransactionMutation.isPending ||
-              categoryOptions.length === 0
-            }
+            disabled={categoriesQuery.isLoading || isPending || categoryOptions.length === 0}
             options={categoryOptions}
           />
 
@@ -144,23 +145,17 @@ function TransactionFormDialog({ defaultValues, mode, trigger }: TransactionForm
             </p>
           ) : null}
 
-          {createTransactionMutation.isError ? (
-            <p className="text-sm leading-5 text-[var(--red-base)]">
-              {createTransactionMutation.error.message}
-            </p>
+          {mutationError ? (
+            <p className="text-sm leading-5 text-[var(--red-base)]">{mutationError.message}</p>
           ) : null}
 
           <Button
             type="submit"
             size="label"
             className="mt-1 w-full text-base leading-6"
-            disabled={
-              categoriesQuery.isLoading ||
-              createTransactionMutation.isPending ||
-              categoryOptions.length === 0
-            }
+            disabled={categoriesQuery.isLoading || isPending || categoryOptions.length === 0}
           >
-            {createTransactionMutation.isPending ? "Saving..." : "Save"}
+            {isPending ? "Saving..." : "Save"}
           </Button>
         </form>
       </DialogContent>
@@ -239,6 +234,22 @@ const getCategoryOptions = (categories: { id: string; title: string }[]): Select
     label: category.title,
     value: category.id,
   }));
+};
+
+const getTransactionFormInput = (
+  formData: FormData,
+  defaults: Pick<CreateTransactionInput, "categoryId" | "type">,
+): CreateTransactionInput => {
+  const rawAmount = String(formData.get("amount") ?? "0");
+  const rawDate = String(formData.get("date") ?? "");
+
+  return {
+    amount: Number(rawAmount.replace(",", ".")),
+    categoryId: String(formData.get("categoryId") ?? defaults.categoryId),
+    date: new Date(`${rawDate}T00:00:00.000Z`).toISOString(),
+    description: String(formData.get("description") ?? ""),
+    type: String(formData.get("type") ?? defaults.type) as "expense" | "income",
+  };
 };
 
 export type { TransactionFormDialogProps, TransactionFormValues };

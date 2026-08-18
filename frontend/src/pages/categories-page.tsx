@@ -221,6 +221,7 @@ function CategoryCard({ category, onDelete }: { category: Category; onDelete: ()
             }
           />
           <CategoryFormDialog
+            categoryId={category.id}
             mode="edit"
             defaultValues={{
               color: getCategoryColor(variant),
