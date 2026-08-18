@@ -16,6 +16,8 @@ export class UserResolver {
     @Arg("data", () => UpdateUserRequest) data: UpdateUserRequest,
     @GqlUser() user: UserModel,
   ): Promise<UserModel> {
-    return this.userService.update(user.id, data);
+    return this.userService.update(user.id, {
+      name: data.name,
+    });
   }
 }

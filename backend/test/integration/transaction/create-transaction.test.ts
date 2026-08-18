@@ -73,4 +73,50 @@ integrationRunner("TransactionService.create", (getContext) => {
       ),
     ).rejects.toThrow("Category not found");
   });
+
+  it("persists only allowed transaction fields", async () => {
+    const service = new TransactionService(getContext().prisma);
+    const user = await createTestUser(getContext().prisma);
+    const otherUser = await createTestUser(getContext().prisma, "other@example.com");
+    const category = await getContext().prisma.category.create({
+      data: {
+        title: "Salary",
+        description: "Work income",
+        icon: "briefcase",
+        colour: "#0ea5e9",
+        userId: user.id,
+      },
+    });
+
+    const transaction = await service.create(
+      {
+        id: "unsafe-transaction-id",
+        description: "August paycheck",
+        date: new Date("2026-08-01T00:00:00.000Z"),
+        amount: 5000,
+        categoryId: category.id,
+        type: TransactionType.income,
+        userId: otherUser.id,
+        createdAt: new Date("2000-01-01T00:00:00.000Z"),
+      } as never,
+      user.id,
+    );
+
+    const persistedTransaction = await getContext().prisma.transaction.findUniqueOrThrow({
+      where: {
+        id: transaction.id,
+      },
+    });
+
+    expect(persistedTransaction).toMatchObject({
+      description: "August paycheck",
+      date: new Date("2026-08-01T00:00:00.000Z"),
+      amount: 5000,
+      categoryId: category.id,
+      userId: user.id,
+      type: TransactionType.income,
+    });
+    expect(persistedTransaction.id).not.toBe("unsafe-transaction-id");
+    expect(persistedTransaction.createdAt).not.toEqual(new Date("2000-01-01T00:00:00.000Z"));
+  });
 });

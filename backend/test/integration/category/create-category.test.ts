@@ -33,4 +33,39 @@ integrationRunner("CategoryService.create", (getContext) => {
       userId: user.id,
     });
   });
+
+  it("persists only allowed category fields", async () => {
+    const service = new CategoryService(getContext().prisma);
+    const user = await createTestUser(getContext().prisma);
+    const otherUser = await createTestUser(getContext().prisma, "other@example.com");
+
+    const category = await service.create(
+      {
+        id: "unsafe-category-id",
+        title: "Food",
+        description: "Groceries and restaurants",
+        icon: "utensils",
+        colour: "#22c55e",
+        userId: otherUser.id,
+        createdAt: new Date("2000-01-01T00:00:00.000Z"),
+      } as never,
+      user.id,
+    );
+
+    const persistedCategory = await getContext().prisma.category.findUniqueOrThrow({
+      where: {
+        id: category.id,
+      },
+    });
+
+    expect(persistedCategory).toMatchObject({
+      title: "Food",
+      description: "Groceries and restaurants",
+      icon: "utensils",
+      colour: "#22c55e",
+      userId: user.id,
+    });
+    expect(persistedCategory.id).not.toBe("unsafe-category-id");
+    expect(persistedCategory.createdAt).not.toEqual(new Date("2000-01-01T00:00:00.000Z"));
+  });
 });

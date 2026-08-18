@@ -13,18 +13,24 @@ export type UpdateUserInput = {
 export class UserService {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async create(input: CreateUserInput): Promise<User> {
+  async create({ email, name, password }: CreateUserInput): Promise<User> {
     return this.prisma.user.create({
-      data: input,
+      data: {
+        email,
+        name,
+        ...(password !== undefined ? { password } : {}),
+      },
     });
   }
 
-  async update(id: string, input: UpdateUserInput): Promise<User> {
+  async update(id: string, { name }: UpdateUserInput): Promise<User> {
     return this.prisma.user.update({
       where: {
         id,
       },
-      data: input,
+      data: {
+        name,
+      },
     });
   }
 }

@@ -71,6 +71,40 @@ e2eRunner("Auth GraphQL", (getContext) => {
     expect(response.body.data).toBeNull();
     expect(response.body.errors[0].message).toBe("Invalid email or password");
   });
+
+  it("rejects unknown fields when updating a user", async () => {
+    const registerResponse = await request(getContext().app)
+      .post("/graphql")
+      .send({
+        query: registerMutation,
+        variables: {
+          data: {
+            name: "Profile User",
+            email: "profile@example.com",
+            password: "secret123",
+          },
+        },
+      });
+    const token = registerResponse.body.data.register.token;
+
+    const response = await request(getContext().app)
+      .post("/graphql")
+      .set("authorization", `Bearer ${token}`)
+      .send({
+        query: updateUserMutation,
+        variables: {
+          data: {
+            name: "Profile Updated",
+            password: "unsafe-password",
+          },
+        },
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.errors[0].message).toContain(
+      'Field "password" is not defined by type "UpdateUserRequest"',
+    );
+  });
 });
 
 const registerMutation = `#graphql
@@ -97,6 +131,16 @@ const loginMutation = `#graphql
         name
         email
       }
+    }
+  }
+`;
+
+const updateUserMutation = `#graphql
+  mutation UpdateUser($data: UpdateUserRequest!) {
+    updateUser(data: $data) {
+      id
+      name
+      email
     }
   }
 `;

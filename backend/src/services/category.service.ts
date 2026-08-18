@@ -12,10 +12,16 @@ export type UpdateCategoryInput = Partial<CreateCategoryInput>;
 export class CategoryService {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async create(input: CreateCategoryInput, userId: string): Promise<Category> {
+  async create(
+    { colour, description, icon, title }: CreateCategoryInput,
+    userId: string,
+  ): Promise<Category> {
     return this.prisma.category.create({
       data: {
-        ...input,
+        colour,
+        description,
+        icon,
+        title,
         userId,
       },
     });

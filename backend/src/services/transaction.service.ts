@@ -38,12 +38,19 @@ export type TransactionSummary = {
 export class TransactionService {
   constructor(private readonly prisma: PrismaClient) {}
 
-  async create(input: CreateTransactionInput, userId: string): Promise<Transaction> {
-    await this.assertCategoryExists(input.categoryId, userId);
+  async create(
+    { amount, categoryId, date, description, type }: CreateTransactionInput,
+    userId: string,
+  ): Promise<Transaction> {
+    await this.assertCategoryExists(categoryId, userId);
 
     return this.prisma.transaction.create({
       data: {
-        ...input,
+        amount,
+        categoryId,
+        date,
+        description,
+        type,
         userId,
       },
     });
