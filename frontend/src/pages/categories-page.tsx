@@ -22,6 +22,7 @@ import { ActionAlertDialog } from "@/components/ui/action-alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { IconButton } from "@/components/ui/icon-button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tag, type TagProps } from "@/components/ui/tag";
 import { useCategoriesQuery } from "@/hooks/use-categories-query";
 import { useDeleteCategoryMutation } from "@/hooks/use-delete-category-mutation";
@@ -141,14 +142,16 @@ function CategoriesPage() {
         </header>
 
         <div className="mt-9 grid gap-6 lg:grid-cols-3">
-          {categoryStats.map((stat) => (
-            <CategoryStatCard key={stat.helper} {...stat} />
-          ))}
+          {categoriesQuery.isLoading
+            ? ["Total categories", "Total transactions", "Most used category"].map((label) => (
+                <CategoryStatCardSkeleton key={label} />
+              ))
+            : categoryStats.map((stat) => <CategoryStatCard key={stat.helper} {...stat} />)}
         </div>
 
         <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           {categoriesQuery.isLoading ? (
-            <CategoryStatusCard message="Loading categories..." />
+            <CategoryCardSkeletons />
           ) : null}
 
           {categoriesQuery.isError ? (
@@ -182,6 +185,19 @@ function CategoryStatCard({ helper, icon: Icon, iconClassName, value }: Category
         <p className="mt-1 text-xs leading-4 font-semibold tracking-[0.08em] text-[var(--gray-500)] uppercase">
           {helper}
         </p>
+      </div>
+    </Card>
+  );
+}
+
+function CategoryStatCardSkeleton() {
+  return (
+    <Card className="min-h-[108px] flex-row items-center gap-5 overflow-visible rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-0 ring-0">
+      <Skeleton className="size-5 shrink-0" />
+
+      <div className="w-full">
+        <Skeleton className="h-9 w-28" />
+        <Skeleton className="mt-2 h-4 w-36" />
       </div>
     </Card>
   );
@@ -258,6 +274,39 @@ function CategoryStatusCard({ message }: { message: string }) {
     <Card className="min-h-[120px] gap-0 overflow-visible rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-6 ring-0 sm:col-span-2 xl:col-span-4">
       <p className="text-sm leading-5 text-[var(--gray-600)]">{message}</p>
     </Card>
+  );
+}
+
+function CategoryCardSkeletons() {
+  return (
+    <>
+      {[0, 1, 2, 3].map((item) => (
+        <Card
+          key={item}
+          className="min-h-[228px] gap-0 overflow-visible rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-6 ring-0"
+        >
+          <header className="flex items-start justify-between gap-3">
+            <Skeleton className="size-10 shrink-0" />
+
+            <div className="flex items-center gap-2">
+              <Skeleton className="size-8" />
+              <Skeleton className="size-8" />
+            </div>
+          </header>
+
+          <div className="mt-7">
+            <Skeleton className="h-6 w-32" />
+            <Skeleton className="mt-2 h-4 w-full" />
+            <Skeleton className="mt-2 h-4 w-4/5" />
+          </div>
+
+          <footer className="mt-auto flex items-center justify-between gap-4 pt-7">
+            <Skeleton className="h-7 w-24" />
+            <Skeleton className="h-5 w-14" />
+          </footer>
+        </Card>
+      ))}
+    </>
   );
 }
 

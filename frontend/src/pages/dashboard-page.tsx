@@ -16,6 +16,7 @@ import {
 import { TransactionFormDialog } from "@/components/forms/transaction-form-dialog";
 import { Navbar } from "@/components/navigation/navbar";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tag, type TagProps } from "@/components/ui/tag";
 import { useTransactionSummaryQuery } from "@/hooks/use-transaction-summary-query";
 import { useTransactionsQuery } from "@/hooks/use-transactions-query";
@@ -180,9 +181,11 @@ function DashboardPage() {
 
       <section className="mx-auto grid w-full max-w-[1280px] gap-6 px-6 py-12 sm:px-10">
         <div className="grid gap-6 lg:grid-cols-3">
-          {summaryCards.map((card) => (
-            <SummaryCard key={card.label} {...card} />
-          ))}
+          {summaryQuery.isLoading
+            ? ["Total balance", "Monthly income", "Monthly expenses"].map((label) => (
+                <SummaryCardSkeleton key={label} />
+              ))
+            : summaryCards.map((card) => <SummaryCard key={card.label} {...card} />)}
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
@@ -195,7 +198,7 @@ function DashboardPage() {
 
             <div>
               {transactionsQuery.isLoading ? (
-                <DashboardStatus message="Loading transactions..." />
+                <RecentTransactionsSkeleton />
               ) : null}
 
               {transactionsQuery.isError ? (
@@ -239,7 +242,7 @@ function DashboardPage() {
 
             <div className="flex flex-col gap-4 px-6 py-6">
               {summaryQuery.isLoading ? (
-                <p className="text-sm leading-5 text-[var(--gray-600)]">Loading categories...</p>
+                <DashboardCategoriesSkeleton />
               ) : null}
 
               {summaryQuery.isError ? (
@@ -296,6 +299,19 @@ function SummaryCard({ amount, icon: Icon, label, tone }: SummaryCard) {
       </div>
 
       <p className="mt-5 text-[28px] leading-9 font-bold text-[var(--gray-800)]">{amount}</p>
+    </Card>
+  );
+}
+
+function SummaryCardSkeleton() {
+  return (
+    <Card className="gap-0 overflow-visible rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-6 ring-0">
+      <div className="flex items-center gap-3">
+        <Skeleton className="size-4 shrink-0" />
+        <Skeleton className="h-4 w-32" />
+      </div>
+
+      <Skeleton className="mt-5 h-9 w-44" />
     </Card>
   );
 }
@@ -377,6 +393,46 @@ function TransactionRow({
         </div>
       </div>
     </article>
+  );
+}
+
+function RecentTransactionsSkeleton() {
+  return (
+    <>
+      {[160, 220, 184, 240, 176].map((width) => (
+        <article
+          key={width}
+          className="grid min-h-[82px] grid-cols-[auto_minmax(0,1fr)] items-center gap-4 border-b border-[var(--gray-200)] px-6 last:border-b-0 sm:grid-cols-[auto_minmax(0,1fr)_auto_auto]"
+        >
+          <Skeleton className="size-10 shrink-0" />
+
+          <div className="min-w-0">
+            <Skeleton className="h-5 max-w-full" style={{ width }} />
+            <Skeleton className="mt-2 h-4 w-20" />
+          </div>
+
+          <Skeleton className="hidden h-7 w-24 sm:block" />
+          <Skeleton className="h-5 w-28 justify-self-end" />
+        </article>
+      ))}
+    </>
+  );
+}
+
+function DashboardCategoriesSkeleton() {
+  return (
+    <>
+      {[0, 1, 2, 3].map((item) => (
+        <div
+          key={item}
+          className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-5"
+        >
+          <Skeleton className="h-7 w-24" />
+          <Skeleton className="h-5 w-14" />
+          <Skeleton className="h-5 w-20" />
+        </div>
+      ))}
+    </>
   );
 }
 
