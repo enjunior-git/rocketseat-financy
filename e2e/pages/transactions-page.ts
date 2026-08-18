@@ -30,6 +30,15 @@ class TransactionsPage {
     await expect(this.page.getByText(description)).toBeVisible();
     await expect(this.page.getByText(`- R$ ${amount.replace(".", ",")}`)).toBeVisible();
   }
+
+  async deleteTransaction({ description }: Pick<CreateTransactionInput, "description">) {
+    await this.page.getByRole("button", { name: `Delete ${description}` }).click();
+    await this.page.getByRole("button", { name: "Delete", exact: true }).click();
+  }
+
+  async expectTransactionHidden({ description }: Pick<CreateTransactionInput, "description">) {
+    await expect(this.page.locator("tbody tr").filter({ hasText: description })).toHaveCount(0);
+  }
 }
 
 export type { CreateTransactionInput };

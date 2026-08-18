@@ -24,6 +24,7 @@ import { Card } from "@/components/ui/card";
 import { IconButton } from "@/components/ui/icon-button";
 import { Tag, type TagProps } from "@/components/ui/tag";
 import { useCategoriesQuery } from "@/hooks/use-categories-query";
+import { useDeleteCategoryMutation } from "@/hooks/use-delete-category-mutation";
 import { cn } from "@/lib/utils";
 import type { Category } from "@/types";
 
@@ -111,6 +112,7 @@ const getCategoryStats = (categories: Category[]): CategoryStat[] => {
 
 function CategoriesPage() {
   const categoriesQuery = useCategoriesQuery();
+  const deleteCategoryMutation = useDeleteCategoryMutation();
   const categories = categoriesQuery.data ?? [];
   const categoryStats = getCategoryStats(categories);
 
@@ -158,7 +160,11 @@ function CategoriesPage() {
           ) : null}
 
           {categories.map((category) => (
-            <CategoryCard key={category.id} category={category} />
+            <CategoryCard
+              key={category.id}
+              category={category}
+              onDelete={() => deleteCategoryMutation.mutate(category.id)}
+            />
           ))}
         </div>
       </section>
@@ -181,7 +187,7 @@ function CategoryStatCard({ helper, icon: Icon, iconClassName, value }: Category
   );
 }
 
-function CategoryCard({ category }: { category: Category }) {
+function CategoryCard({ category, onDelete }: { category: Category; onDelete: () => void }) {
   const variant = getCategoryColor(category.colour);
   const Icon = getCategoryIcon(category.icon);
 
@@ -203,6 +209,7 @@ function CategoryCard({ category }: { category: Category }) {
             description={`This will delete "${category.title}". Transactions using this category may need to be reassigned.`}
             actionLabel="Delete"
             actionVariant="destructive"
+            onAction={onDelete}
             media={<Trash2 aria-hidden="true" className="text-[var(--red-base)]" />}
             trigger={
               <IconButton

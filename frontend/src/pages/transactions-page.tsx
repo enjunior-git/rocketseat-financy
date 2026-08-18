@@ -31,6 +31,7 @@ import { PaginationButton } from "@/components/ui/pagination-button";
 import { Select, type SelectOption } from "@/components/ui/select";
 import { Tag, type TagProps } from "@/components/ui/tag";
 import { useCategoriesQuery } from "@/hooks/use-categories-query";
+import { useDeleteTransactionMutation } from "@/hooks/use-delete-transaction-mutation";
 import { useTransactionsQuery } from "@/hooks/use-transactions-query";
 import { cn } from "@/lib/utils";
 import type { Category, Transaction } from "@/types";
@@ -42,6 +43,7 @@ type TransactionRow = {
   categoryVariant: TagProps["variant"];
   date: string;
   description: string;
+  id: string;
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   iconClassName: string;
   type: "income" | "expense";
@@ -104,7 +106,9 @@ const getCategoryIcon = (icon?: string) => {
   return categoryIconByValue[icon] ?? BriefcaseBusiness;
 };
 
-function toTransactionFormValues(transaction: TransactionRow): TransactionFormValues {
+function toTransactionFormValues(
+  transaction: Pick<TransactionRow, "amount" | "categoryId" | "date" | "description" | "type">,
+): TransactionFormValues {
   return {
     amount: transaction.amount
       .replace(/^[+-]\s*R\$\s*/, "")
@@ -156,6 +160,7 @@ function toTransactionRow(transaction: Transaction): TransactionRow {
     categoryVariant,
     date: formatDate(transaction.date),
     description: transaction.description,
+    id: transaction.id,
     icon: getCategoryIcon(category?.icon),
     iconClassName: categoryIconToneByColor[categoryVariant],
     type: transaction.type,
@@ -175,6 +180,7 @@ function getCategoryFilterOptions(categories: Category[]): SelectOption[] {
 function TransactionsPage() {
   const transactionsQuery = useTransactionsQuery();
   const categoriesQuery = useCategoriesQuery();
+  const deleteTransactionMutation = useDeleteTransactionMutation();
   const transactions = transactionsQuery.data ?? [];
   const categoryFilterOptions = getCategoryFilterOptions(categoriesQuery.data ?? []);
   const firstResult = transactions.length > 0 ? 1 : 0;
@@ -235,6 +241,7 @@ function TransactionsPage() {
                 {transactions.map(toTransactionRow).map((transaction) => (
                   <TransactionTableRow
                     key={`${transaction.description}-${transaction.date}`}
+                    onDelete={() => deleteTransactionMutation.mutate(transaction.id)}
                     {...transaction}
                   />
                 ))}
@@ -294,10 +301,11 @@ function TransactionTableRow({
   categoryVariant,
   date,
   description,
+  onDelete,
   icon: Icon,
   iconClassName,
   type,
-}: TransactionRow) {
+}: TransactionRow & { onDelete: () => void }) {
   const TypeIcon = type === "income" ? CircleArrowUp : CircleArrowDown;
 
   return (
@@ -342,6 +350,7 @@ function TransactionTableRow({
             description={`This will delete "${description}" from your transaction history.`}
             actionLabel="Delete"
             actionVariant="destructive"
+            onAction={onDelete}
             media={<Trash2 aria-hidden="true" className="text-[var(--red-base)]" />}
             trigger={
               <IconButton
@@ -356,13 +365,9 @@ function TransactionTableRow({
             mode="edit"
             defaultValues={toTransactionFormValues({
               amount,
-              category,
               categoryId,
-              categoryVariant,
               date,
               description,
-              icon: Icon,
-              iconClassName,
               type,
             })}
             trigger={

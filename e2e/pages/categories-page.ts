@@ -30,6 +30,16 @@ class CategoriesPage {
     await expect(this.page.getByText("1", { exact: true })).toBeVisible();
     await expect(this.page.getByText("Total categories")).toBeVisible();
   }
+
+  async deleteCategory({ title }: Pick<CreateCategoryInput, "title">) {
+    await this.page.getByRole("button", { name: `Delete ${title}` }).click();
+    await this.page.getByRole("button", { name: "Delete", exact: true }).click();
+  }
+
+  async expectCategoryHidden({ description, title }: CreateCategoryInput) {
+    await expect(this.page.getByRole("heading", { name: title })).toHaveCount(0);
+    await expect(this.page.locator("main").getByText(description)).toHaveCount(0);
+  }
 }
 
 export type { CreateCategoryInput };

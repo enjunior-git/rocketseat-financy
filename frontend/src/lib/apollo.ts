@@ -20,5 +20,18 @@ const authLink = new ApolloLink((operation, forward) => {
 
 export const apolloClient = new ApolloClient({
   link: ApolloLink.from([authLink, httpLink]),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          listCategories: {
+            merge: false,
+          },
+          listTransactions: {
+            merge: false,
+          },
+        },
+      },
+    },
+  }),
 });
