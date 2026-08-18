@@ -1,110 +1,19 @@
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
 import {
   categoryIconToneByColor,
   formatTransactionCount,
   getCategoryColor,
   getCategoryIcon,
-  getCategoryStats,
-  type CategoryStat,
 } from "@/entities/category";
-import { useCategoriesQuery } from "@/entities/category";
-import { useDeleteCategoryMutation } from "@/features/category/delete-category";
 import { CategoryFormDialog } from "@/features/category/save-category";
 import type { Category } from "@/shared/api/types";
 import { cn } from "@/shared/lib/utils";
 import { ActionAlertDialog } from "@/shared/ui/action-alert-dialog";
-import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { IconButton } from "@/shared/ui/icon-button";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { Tag } from "@/shared/ui/tag";
-
-function CategoriesPage() {
-  const categoriesQuery = useCategoriesQuery();
-  const deleteCategoryMutation = useDeleteCategoryMutation();
-  const categories = categoriesQuery.data ?? [];
-  const categoryStats = getCategoryStats(categories);
-
-  return (
-    <section className="mx-auto w-full max-w-[1280px] px-6 py-12 sm:px-10">
-      <header className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-[28px] leading-9 font-bold text-[var(--gray-800)]">Categories</h1>
-          <p className="mt-1 text-base leading-6 text-[var(--gray-600)]">
-            Organize your transactions by category
-          </p>
-        </div>
-
-        <CategoryFormDialog
-          mode="create"
-          trigger={
-            <Button type="button" size="label-sm" className="w-fit">
-              <Plus />
-              New category
-            </Button>
-          }
-        />
-      </header>
-
-      <div className="mt-9 grid gap-6 lg:grid-cols-3">
-        {categoriesQuery.isLoading
-          ? ["Total categories", "Total transactions", "Most used category"].map((label) => (
-              <CategoryStatCardSkeleton key={label} />
-            ))
-          : categoryStats.map((stat) => <CategoryStatCard key={stat.helper} {...stat} />)}
-      </div>
-
-      <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        {categoriesQuery.isLoading ? <CategoryCardSkeletons /> : null}
-
-        {categoriesQuery.isError ? (
-          <CategoryStatusCard message={categoriesQuery.error.message} />
-        ) : null}
-
-        {!categoriesQuery.isLoading && !categoriesQuery.isError && categories.length === 0 ? (
-          <CategoryStatusCard message="No categories yet." />
-        ) : null}
-
-        {categories.map((category) => (
-          <CategoryCard
-            key={category.id}
-            category={category}
-            onDelete={() => deleteCategoryMutation.mutate(category.id)}
-          />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function CategoryStatCard({ helper, icon: Icon, iconClassName, value }: CategoryStat) {
-  return (
-    <Card className="min-h-[108px] flex-row items-center gap-5 overflow-visible rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-0 ring-0">
-      <Icon aria-hidden="true" className={cn("size-5 shrink-0 stroke-[1.75]", iconClassName)} />
-
-      <div>
-        <p className="text-[28px] leading-9 font-bold text-[var(--gray-800)]">{value}</p>
-        <p className="mt-1 text-xs leading-4 font-semibold tracking-[0.08em] text-[var(--gray-500)] uppercase">
-          {helper}
-        </p>
-      </div>
-    </Card>
-  );
-}
-
-function CategoryStatCardSkeleton() {
-  return (
-    <Card className="min-h-[108px] flex-row items-center gap-5 overflow-visible rounded-[8px] border border-[var(--gray-200)] bg-[var(--white)] px-6 py-0 ring-0">
-      <Skeleton className="size-5 shrink-0" />
-
-      <div className="w-full">
-        <Skeleton className="h-9 w-28" />
-        <Skeleton className="mt-2 h-4 w-36" />
-      </div>
-    </Card>
-  );
-}
 
 function CategoryCard({ category, onDelete }: { category: Category; onDelete: () => void }) {
   const variant = getCategoryColor(category.colour);
@@ -213,4 +122,4 @@ function CategoryCardSkeletons() {
   );
 }
 
-export { CategoriesPage };
+export { CategoryCard, CategoryCardSkeletons, CategoryStatusCard };
