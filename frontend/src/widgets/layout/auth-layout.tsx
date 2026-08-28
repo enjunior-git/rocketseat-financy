@@ -47,7 +47,12 @@ function AuthLayout({
             <p className="text-sm leading-5 text-[var(--gray-600)]">{footerText}</p>
 
             <Link to={actionTo} className="w-full">
-              <Button type="button" variant="outline" size="label" className="w-full text-base leading-6">
+              <Button
+                type="button"
+                variant="outline"
+                size="label"
+                className="w-full text-base leading-6"
+              >
                 {actionIcon}
                 {actionLabel}
               </Button>

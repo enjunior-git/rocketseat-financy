@@ -90,14 +90,12 @@ e2eRunner("Auth GraphQL", (getContext) => {
       },
     });
 
-    const response = await request(getContext().app)
-      .post("/graphql")
-      .send({
-        query: registerMutation,
-        variables: {
-          data,
-        },
-      });
+    const response = await request(getContext().app).post("/graphql").send({
+      query: registerMutation,
+      variables: {
+        data,
+      },
+    });
 
     expect(response.status).toBe(200);
     expect(response.body.data).toBeNull();
