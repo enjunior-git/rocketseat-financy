@@ -5,10 +5,11 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "tsx watch ./src/index.ts",
+    "dev": "prisma db push && tsx watch ./src/index.ts",
     "build": "tsc",
     "check": "tsc --noEmit",
     "start": "node dist/src/index.js",
+    "db:push": "prisma db push",
     "prisma:generate": "prisma generate",
     "test:integration": "vitest run"
   },
