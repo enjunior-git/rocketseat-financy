@@ -1,6 +1,10 @@
 import request from "supertest";
-import { expect, it } from "vitest";
+import { expect, it, vi } from "vitest";
 import { e2eRunner } from "../helpers/e2e-runner.js";
+
+const expectGraphqlErrorMessage = (error: unknown, message: string) => {
+  expect(error).toEqual({ message });
+};
 
 e2eRunner("Auth GraphQL", (getContext) => {
   it("registers and logs in a user", async () => {
@@ -69,7 +73,35 @@ e2eRunner("Auth GraphQL", (getContext) => {
 
     expect(response.status).toBe(200);
     expect(response.body.data).toBeNull();
-    expect(response.body.errors[0].message).toBe("Invalid email or password");
+    expectGraphqlErrorMessage(response.body.errors[0], "Invalid email or password");
+  });
+
+  it("returns the safe duplicate-user message", async () => {
+    const data = {
+      name: "Duplicate User",
+      email: "duplicate@example.com",
+      password: "secret123",
+    };
+
+    await request(getContext().app).post("/graphql").send({
+      query: registerMutation,
+      variables: {
+        data,
+      },
+    });
+
+    const response = await request(getContext().app)
+      .post("/graphql")
+      .send({
+        query: registerMutation,
+        variables: {
+          data,
+        },
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.data).toBeNull();
+    expectGraphqlErrorMessage(response.body.errors[0], "User already exists");
   });
 
   it("rejects unknown fields when updating a user", async () => {
@@ -104,6 +136,39 @@ e2eRunner("Auth GraphQL", (getContext) => {
     expect(response.body.errors[0].message).toContain(
       'Field "password" is not defined by type "UpdateUserRequest"',
     );
+    expect(response.body.errors[0].locations).toBeUndefined();
+    expect(response.body.errors[0].path).toBeUndefined();
+    expect(response.body.errors[0].extensions).toBeUndefined();
+  });
+
+  it("masks and logs unknown auth errors", async () => {
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    try {
+      await getContext().prisma.$executeRawUnsafe('DROP TABLE "User"');
+
+      const response = await request(getContext().app)
+        .post("/graphql")
+        .send({
+          query: loginMutation,
+          variables: {
+            data: {
+              email: "missing@example.com",
+              password: "secret123",
+            },
+          },
+        });
+
+      expect(response.status).toBe(200);
+      expect(response.body.data).toBeNull();
+      expectGraphqlErrorMessage(
+        response.body.errors[0],
+        "Unknown error, please contact our support",
+      );
+      expect(consoleError).toHaveBeenCalled();
+    } finally {
+      consoleError.mockRestore();
+    }
   });
 });
 

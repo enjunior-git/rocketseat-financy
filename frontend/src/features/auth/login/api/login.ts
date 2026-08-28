@@ -1,4 +1,5 @@
 import { apolloClient } from "@/shared/api/apollo";
+import { toApiError, UNKNOWN_ERROR_MESSAGE } from "@/shared/api/errors";
 import { LOGIN_MUTATION } from "@/shared/api/graphql/mutations/Login";
 import type { LoginInput, User } from "@/shared/api/types";
 
@@ -13,18 +14,22 @@ type LoginMutationData = {
 type LoginResult = LoginMutationData["login"];
 
 const loginUser = async (input: LoginInput): Promise<LoginResult> => {
-  const { data } = await apolloClient.mutate<LoginMutationData, { data: LoginInput }>({
-    mutation: LOGIN_MUTATION,
-    variables: {
-      data: input,
-    },
-  });
+  try {
+    const { data } = await apolloClient.mutate<LoginMutationData, { data: LoginInput }>({
+      mutation: LOGIN_MUTATION,
+      variables: {
+        data: input,
+      },
+    });
 
-  if (!data?.login) {
-    throw new Error("Login did not return an auth session.");
+    if (!data?.login) {
+      throw new Error(UNKNOWN_ERROR_MESSAGE);
+    }
+
+    return data.login;
+  } catch (error) {
+    throw toApiError(error);
   }
-
-  return data.login;
 };
 
 export type { LoginResult };

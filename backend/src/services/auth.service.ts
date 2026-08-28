@@ -1,5 +1,6 @@
 import type { PrismaClient, User } from "../../generated/prisma/client.js";
 import type { AuthResponse, LoginRequest, RegisterRequest } from "../dtos/auth.dto.js";
+import { UserFacingError } from "../graphql/errors.js";
 import { comparePassword, hashPassword } from "../lib/hash.js";
 import { signJwt } from "../lib/jwt.js";
 
@@ -14,13 +15,13 @@ export class AuthService {
     });
 
     if (!user?.password) {
-      throw new Error("Invalid email or password");
+      throw new UserFacingError("Invalid email or password");
     }
 
     const passwordsMatch = await comparePassword(data.password, user.password);
 
     if (!passwordsMatch) {
-      throw new Error("Invalid email or password");
+      throw new UserFacingError("Invalid email or password");
     }
 
     return this.generateTokens(user);
@@ -34,7 +35,7 @@ export class AuthService {
     });
 
     if (existingUser) {
-      throw new Error("User already exists");
+      throw new UserFacingError("User already exists");
     }
 
     const hashedPassword = await hashPassword(data.password);

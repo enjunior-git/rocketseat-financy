@@ -7,6 +7,7 @@ import express, { type Express } from "express";
 import { buildSchema } from "type-graphql";
 import { ENV } from "./env.js";
 import { buildContext } from "./graphql/context.js";
+import { formatGraphqlError } from "./graphql/errors.js";
 import { AuthResolver } from "./resolvers/auth.resolver.js";
 import { CategoryResolver } from "./resolvers/category.resolver.js";
 import { HealthcheckResolver } from "./resolvers/healthcheck.resolver.js";
@@ -47,6 +48,7 @@ export async function createApp(options: CreateAppOptions = {}): Promise<Graphql
 
   const server = new ApolloServer({
     schema,
+    formatError: formatGraphqlError,
   });
 
   await server.start();
