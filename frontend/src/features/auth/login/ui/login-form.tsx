@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { Mail } from "lucide-react";
+import { Check, Mail } from "lucide-react";
 import { useLoginMutation } from "@/features/auth/login";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -43,10 +43,10 @@ function LoginForm() {
       <PasswordInput name="password" disabled={loginMutation.isPending} required />
 
       <Label className="flex w-fit items-center gap-2 text-sm leading-5 font-normal text-[var(--gray-700)]">
-        <input
-          type="checkbox"
-          className="size-4 rounded-[4px] border border-[var(--gray-300)] bg-[var(--white)] accent-[var(--brand-base)]"
-        />
+        <input type="checkbox" className="peer sr-only" />
+        <span className="flex size-4 shrink-0 items-center justify-center rounded-[4px] border border-[var(--gray-300)] bg-[var(--white)] text-[var(--white)] peer-checked:border-[var(--brand-base)] peer-checked:bg-[var(--brand-base)] peer-checked:[&_svg]:opacity-100 peer-focus-visible:ring-3 peer-focus-visible:ring-ring/50">
+          <Check className="size-3 opacity-0" />
+        </span>
         Remember me
       </Label>
 
