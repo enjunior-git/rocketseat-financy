@@ -1,4 +1,5 @@
 import type { Category, Transaction } from "@/shared/api/types";
+import { getLocalLocale } from "@/shared/lib/intl";
 import type { SelectOption } from "@/shared/ui/select";
 
 type TransactionFilters = {
@@ -50,7 +51,7 @@ const getPeriodLabel = (period: string): string => {
   const [year, month] = period.split("-");
   const date = new Date(Date.UTC(Number(year), Number(month) - 1, 1));
 
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(getLocalLocale(), {
     month: "long",
     timeZone: "UTC",
     year: "numeric",

@@ -1,9 +1,11 @@
 import type { Transaction } from "@/shared/api/types";
+import { getLocalLocale } from "@/shared/lib/intl";
 
 const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat("pt-BR", {
+  return new Intl.NumberFormat(getLocalLocale(), {
+    currency: "CAD",
+    currencyDisplay: "narrowSymbol",
     style: "currency",
-    currency: "BRL",
   }).format(amount);
 };
 
@@ -12,7 +14,7 @@ const formatSignedCurrency = (amount: number, type: Transaction["type"]) => {
 };
 
 const formatDate = (date: string) => {
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(getLocalLocale(), {
     day: "2-digit",
     month: "2-digit",
     year: "2-digit",
@@ -25,9 +27,17 @@ const toInputDate = (date: string) => {
     return date.slice(0, 10);
   }
 
-  const [month, day, year] = date.split("/");
+  const parsedDate = new Date(date);
 
-  return `20${year}-${month}-${day}`;
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "";
+  }
+
+  const year = parsedDate.getUTCFullYear();
+  const month = String(parsedDate.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(parsedDate.getUTCDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
 };
 
 export { formatCurrency, formatDate, formatSignedCurrency, toInputDate };
